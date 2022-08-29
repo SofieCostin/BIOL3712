@@ -423,8 +423,6 @@ TukeyHSD(leafno.aov, which = "saltConc")
 # have a play and see what you think shows your results the best!
 ?ggline
 
-subsetnames <- c("a", "b", "c", "d", "e")
-
 ggline(asratio_df, x = "saltConc", y = "leafNoRatio", color = "species",
        add = c("mean_se"),
        xlab = "salt concentration (g/L)",

@@ -1,2 +1,2 @@
 # BIOL3712
-Code for teaching in BIOL3712 
+Code and data for teaching in BIOL3712 

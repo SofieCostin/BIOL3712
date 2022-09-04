@@ -1,14 +1,14 @@
-################################################################################
+# ******************************************************************************
 
-###                     Rex and Sof's amazing Salinity Workshop                      ###
+###                     Rex and Sof's Salinity Workshop                      ###
 
-################################################################################
+# ******************************************************************************
 
-################################################################################
+# ******************************************************************************
 
 # Introduction to R -------------------------------------------------------
 
-################################################################################
+# ******************************************************************************
 
 # First thing's first. The hash symbol '#' is known as the 'commenting symbol'.
 # It is used to make notes that are not recognized as code by the software.
@@ -246,16 +246,17 @@ species <- data$Species
 species
 # So it is registered as a Factor with 150 observations across three levels.
 
-################################################################################
+# ******************************************************************************
 
 # Salinity Data Analysis ----------------
 
-################################################################################
+# ******************************************************************************
 
 # first, we're going to clear the data from our global environment, so we have a 
 # fresh start
 
 rm(list = ls())
+
 
 # Let's import our data
 
@@ -268,7 +269,7 @@ getwd()
 # your data should be saved in your working directory folder. You can then easily
 # access this data:
 
-all_data <- na.omit(data.frame(read.csv("2021_data.csv")))  
+all_data <- na.omit(data.frame(read.csv("2022_data.csv")))  
 # read.csv will import the data from our working directory
 head(all_data) 
 # note that we now have all_data in our global environment, which is ##### observations 
@@ -279,8 +280,8 @@ names(all_data)[1] <- 'species'
 str(all_data)
 summary(all_data)
 
-# To make sure that our results make sense, we have calculated each variable as 
-# a ratio of the control. 
+# To standardise our results, we have calculated each variable as 
+# a ratio of the mean of the control. 
 # We are going to analyse the response variables leaf_no_ratio, shoot_height_ratio, 
 # root_length_ratio, fw_shoot_root_ratio, dw_shoot_root_ratio, shoot_moisture, and root_moisture.
 
@@ -305,7 +306,7 @@ totMoist <- all_data$total_moisture
 
 # While we do this, we're going to exclude the controls for the "leaf number-", 
 # "shoot height-" and "root length (ratio to control mean)" variables. We're going 
-#to combine them into dataframes with the species and salt concentration
+# to combine them into dataframes with the species and salt concentration
 # because we want to make sure we have the same number of observations for each of these variables.
 
 asratio_df1 <- cbind.data.frame(species, saltConc, leafNoRatio, shootHtRatio, rootLnRatio)
@@ -321,6 +322,13 @@ str(asratio_df)
 alldata_df <- cbind.data.frame(species, saltConc, fwShootRoot, dwShootRoot, 
                                shootMoist, rootMoist, totMoist)
 
+# we'll save this as a .csv for later:
+getwd() #find the path for your working directory then paste it as your output path
+# in the line below:
+path_out = "C:/Users/sofie/OneDrive - Flinders/2022/BIOL3712 Integrative Physiology/Practicals_workshops/"
+write.csv(alldata_df,paste(path_out,'alldata_df.csv'))
+
+
 # Next, we need to perform some assumption testing. This is like checking in the 
 # pantry to see what ingredients you have. If you have eggs, flour, milk, and sugar, 
 # you can make a cake. If you have eggs, milk, bacon and cheese
@@ -331,6 +339,14 @@ alldata_df <- cbind.data.frame(species, saltConc, fwShootRoot, dwShootRoot,
 #     > homogeneity of variances
 #     > data are independent (we know our data are independent because the plants 
 # were grown in their own pots, and don't influence each other either way.)
+
+
+# Leaf Number as a Ratio of Control Mean ----------------------------------
+
+# first, we're going to analyse the plant's leaf number as a ratio to the mean control in 
+# response to salinity level.
+
+# Let's check our assumptions:
 
 ### Assumption 1: data are normally distributed
 # The central limit theorem tells us that When we have a sample size large enough 
@@ -360,16 +376,39 @@ hist(asratio_df$leafNoRatio)
 
 # install.packages("ggpubr")
 library(ggpubr)
+library(dplyr)
 
 #plot leaf number as ratio to control mean by groups "salt concentration"
 # colour box plot by second group "species"
 
 ggboxplot(asratio_df, x = "saltConc", y = "leafNoRatio", color = "species")
 
-# We can then make note of where outliers occur, and remove them from our data set if we have a valid reason to do so.
+# In this case, we can see that there are some outliers present. Generally, outliers
+# are classed as numbers outside of 1.5 * the interquartile range. 
+# we are going to remove these outliers. Make sure to give justification for this removal in your methods section.
+
+# first, we work out what our first and third quartiles are for our data:
+quartiles <- quantile(asratio_df$leafNoRatio, probs=c(.25, .75), na.rm = FALSE) 
+# and determine the interquartile range (IQR)
+IQR <- IQR(asratio_df$leafNoRatio)
+
+# Then we find our lower and upper limits:
+Lower <- quartiles[1] - 1.5*IQR
+Upper <- quartiles[2] + 1.5*IQR 
+
+# and reassign any data above the lower threshold and below the upper threshold to a new dataframe, 
+# which we will use for the analysis.
+leafNoRatio_noOutliers <- filter(asratio_df, leafNoRatio > Lower & leafNoRatio < Upper )
 
 # After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
-shapiro.test(asratio_df$leafNoRatio)
+shapiro.test(leafNoRatio_noOutliers$leafNoRatio)
+
+# we still have a significant p-value, but let's check out our histogram:
+hist(leafNoRatio_noOutliers$leafNoRatio)
+
+ggboxplot(leafNoRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "species")
+
+# looks pretty good. Let's proceed.
 
 ### Assumption 2: variances are homogeneous
 
@@ -423,8 +462,170 @@ TukeyHSD(leafno.aov, which = "saltConc")
 # have a play and see what you think shows your results the best!
 ?ggline
 
+
 ggline(asratio_df, x = "saltConc", y = "leafNoRatio", color = "species",
        add = c("mean_se"),
        xlab = "salt concentration (g/L)",
        ylab = "number of leaves (ratio to control mean)",
        legend = "right")
+
+# once we're happy with our plot, we click "export" and save it in our working folder.
+
+
+# Root length as a Ratio of Control Mean ----------------------------------
+
+# Let's check our assumptions:
+
+### Assumption 1: data are normally distributed
+# let's do a shapiro-wilk test of normality on our rootLnRatio variable
+shapiro.test(asratio_df$rootLnRatio)
+
+# If the Sig. value of the Shapiro-Wilk Test is greater than 0.05, the data is normal. 
+# If it is below 0.05, the data significantly deviate from a normal distribution.
+
+# we can visually assess distribution using histograms 
+hist(asratio_df$rootLnRatio)
+
+# if we compare the results from our normality tests with our histograms, we can 
+# see whether our data are normally distributed.
+
+# Sometimes, to bring our data closer to normality, we can remove some outliers. 
+# We need to explore this visually using boxplots, for both our species and our salt concentration. 
+
+# plot root length as a ratio to control mean by groups "salt concentration"
+# colour box plot by second group "species"
+
+ggboxplot(asratio_df, x = "saltConc", y = "rootLnRatio", color = "species")
+
+# We can then make note of where outliers occur, and remove them from our data set if we 
+# have a valid reason to do so.
+
+# In this case, we can see that there are some outliers present. Generally, outliers
+# are classed as numbers outside of 1.5 * the interquartile range. 
+# we are going to remove these outliers. Make sure to give justification for this removal in your methods section.
+
+# first, we work out what our first and third quartiles are for our data:
+quartiles <- quantile(asratio_df$rootLnRatio, probs=c(.25, .75), na.rm = FALSE) 
+# and determine the interquartile range (IQR)
+IQR <- IQR(asratio_df$rootLnRatio)
+
+# Then we find our lower and upper limits:
+Lower <- quartiles[1] - 1.5*IQR
+Upper <- quartiles[2] + 1.5*IQR 
+
+# and reassign any data above the lower threshold and below the upper threshold to a new dataframe, 
+# which we will use for the analysis.
+rootLnRatio_noOutliers <- filter(asratio_df, rootLnRatio > Lower & rootLnRatio < Upper )
+
+# After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
+shapiro.test(rootLnRatio_noOutliers$rootLnRatio)
+
+# And double check using a histogram:
+# we can visually assess distribution using histograms 
+hist(rootLnRatio_noOutliers$rootLnRatio)
+
+# and have another look at our new boxplots:
+ggboxplot(rootLnRatio_noOutliers, x = "saltConc", y = "rootLnRatio", color = "species")
+
+### Assumption 2: variances are homogeneous
+
+# Let's do our levene's test
+
+leveneTest(rootLnRatio ~ species*saltConc, data =rootLnRatio_noOutliers)
+
+# and we're good to go!
+
+### two-way ANOVA
+
+rootLn.aov <- aov(rootLnRatio ~ species * saltConc, data = rootLnRatio_noOutliers)
+summary(rootLn.aov)
+
+
+# we can generate some summary statistics for our response data, depending on our two factors:
+
+group_by(rootLnRatio_noOutliers, species, saltConc) %>%
+  summarise(count = n(),mean = mean(rootLnRatio, na.rm = TRUE),
+            sd = sd(rootLnRatio, na.rm = TRUE))
+
+# Tukey's HSD will tell is where the differences between groups are
+
+TukeyHSD(rootLn.aov, which = "saltConc")
+
+
+### let's graph it!
+
+ggline(rootLnRatio_noOutliers, x = "saltConc", y = "rootLnRatio", color = "species",
+       add = c("mean_se"),
+       xlab = "salt concentration (g/L)",
+       ylab = "root length (ratio to control mean)",
+       legend = "right")
+
+# don't forget to export your plot
+
+# Shoot height as a Ratio of Control Mean ----------------------------------
+
+# Let's check our assumptions:
+
+### Assumption 1: data are normally distributed
+# let's do a shapiro-wilk test of normality on our rootLnRatio variable
+shapiro.test(asratio_df$shootHtRatio)
+
+# If the Sig. value of the Shapiro-Wilk Test is greater than 0.05, the data is normal. 
+# If it is below 0.05, the data significantly deviate from a normal distribution.
+
+# we can visually assess distribution using histograms 
+hist(asratio_df$shootHtRatio)
+
+# hmm, there's quite a bit of skew there. Let's look a little closer using boxplots:
+
+ggboxplot(asratio_df, x = "saltConc", y = "shootHtRatio", color = "species")
+
+# and remove our outliers:
+
+quartiles <- quantile(asratio_df$shootHtRatio, probs=c(.25, .75), na.rm = FALSE) 
+IQR <- IQR(asratio_df$shootHtRatio)
+
+Lower <- quartiles[1] - 1.5*IQR
+Upper <- quartiles[2] + 1.5*IQR 
+
+shootHtRatio_noOutliers <- filter(asratio_df, shootHtRatio > Lower & shootHtRatio < Upper )
+
+# now we check again:
+shapiro.test(shootHtRatio_noOutliers$shootHtRatio)
+hist(shootHtRatio_noOutliers$shootHtRatio)
+ggboxplot(shootHtRatio_noOutliers, x = "saltConc", y = "shootHtRatio", color = "species")
+
+# we still have some skew, and our shapiro-wilk test tells us that our data is not normal.
+# however, since ANOVA are robust to deviations from normality, we will proceed and check 
+# our next assumption:
+
+### Assumption 2: variances are homogeneous
+# Let's do our levene's test
+leveneTest(shootHtRatio ~ species*saltConc, data =shootHtRatio_noOutliers)
+
+# and we're good to go!
+
+### two-way ANOVA
+
+shootHt.aov <- aov(shootHtRatio ~ species * saltConc, data = shootHtRatio_noOutliers)
+summary(shootHt.aov)
+
+# summary statistics:
+group_by(shootHtRatio_noOutliers, species, saltConc) %>%
+  summarise(count = n(),mean = mean(shootHtRatio, na.rm = TRUE),
+            sd = sd(shootHtRatio, na.rm = TRUE))
+
+# Tukey's HSD will tell is where the differences between groups are
+
+TukeyHSD(shootHt.aov, which = "saltConc")
+
+
+### let's graph it!
+
+ggline(shootHtRatio_noOutliers, x = "saltConc", y = "shootHtRatio", color = "species",
+       add = c("mean_se"),
+       xlab = "salt concentration (g/L)",
+       ylab = "shoot height (ratio to control mean)",
+       legend = "right")
+
+# don't forget to export your plot

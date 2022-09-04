@@ -323,9 +323,9 @@ alldata_df <- cbind.data.frame(species, saltConc, fwShootRoot, dwShootRoot,
                                shootMoist, rootMoist, totMoist)
 
 # we'll save this as a .csv for later:
-getwd() #find the path for your working directory then paste it as your output path
+getwd() # find the path for your working directory then paste it as your output path
 # in the line below:
-path_out = "C:/Users/sofie/OneDrive - Flinders/2022/BIOL3712 Integrative Physiology/Practicals_workshops/"
+path_out = " ## enter your filepath here, make sure it ends with /"
 write.csv(alldata_df,paste(path_out,'alldata_df.csv'))
 
 

@@ -74,6 +74,8 @@ asratio_df <- asratio_df1[asratio_df1$saltConc>0,]
 # we can get the summary for any of these variables and see the datatypes, etc
 summary(asratio_df)
 str(asratio_df)
+# and we can check how many replicates we have for each treatment
+table(asratio_df$species, asratio_df$saltConc)
 
 # and we'll just make a dataframe of the rest of the variables, because it makes 
 # plotting easier down the track:
@@ -151,6 +153,10 @@ Upper <- quartiles[2] + 1.5*IQR
 # which we will use for the analysis.
 leafNoRatio_noOutliers <- filter(asratio_df, leafNoRatio > Lower & leafNoRatio < Upper )
 
+# let's check how many replicates we have for each, now
+
+table(leafNoRatio_noOutliers$species, leafNoRatio_noOutliers$saltConc)
+
 # After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
 shapiro.test(leafNoRatio_noOutliers$leafNoRatio)
 
@@ -169,10 +175,7 @@ ggboxplot(leafNoRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "sp
 # install.packages("car")
 library(car) # access the car package
 
-leveneTest(leafNoRatio ~ species*saltConc, data = asratio_df)
-
-# we're going to check how many replicates we have for each of our factors
-table(species, saltConc)
+leveneTest(leafNoRatio ~ species*saltConc, data = leafNoRatio_noOutliers)
 
 ### two-way ANOVA
 
@@ -184,12 +187,12 @@ table(species, saltConc)
 # if the p-value for our ANOVA is >0.05, we reject the null, and find that there 
 # is a significant difference or interaction.
 
-leafno.aov <- aov(leafNoRatio ~ species * saltConc, data = asratio_df)
+leafno.aov <- aov(leafNoRatio ~ species * saltConc, data = leafNoRatio_noOutliers)
 summary(leafno.aov)
 
  # we can generate some summary statistics for our response data, depending on our two factors:
 require("dplyr")
-group_by(asratio_df, species, saltConc) %>%
+group_by(leafNoRatio_noOutliers, species, saltConc) %>%
   summarise(count = n(),mean = mean(leafNoRatio, na.rm = TRUE),
             sd = sd(leafNoRatio, na.rm = TRUE))
 
@@ -214,7 +217,7 @@ TukeyHSD(leafno.aov, which = "saltConc")
 ?ggline
 
 
-ggline(asratio_df, x = "saltConc", y = "leafNoRatio", color = "species",
+ggline(shootHtRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "species",
        add = c("mean_se"),
        xlab = "salt concentration (g/L)",
        ylab = "number of leaves (ratio to control mean)",
@@ -277,6 +280,8 @@ hist(rootLnRatio_noOutliers$rootLnRatio)
 
 # and have another look at our new boxplots:
 ggboxplot(rootLnRatio_noOutliers, x = "saltConc", y = "rootLnRatio", color = "species")
+
+table(rootLnRatio_noOutliers$species, rootLnRatio_noOutliers$saltConc)
 
 ### Assumption 2: variances are homogeneous
 
@@ -345,6 +350,8 @@ shootHtRatio_noOutliers <- filter(asratio_df, shootHtRatio > Lower & shootHtRati
 shapiro.test(shootHtRatio_noOutliers$shootHtRatio)
 hist(shootHtRatio_noOutliers$shootHtRatio)
 ggboxplot(shootHtRatio_noOutliers, x = "saltConc", y = "shootHtRatio", color = "species")
+
+table(shootHtRatio_noOutliers$species, shootHtRatio_noOutliers$saltConc)
 
 # we still have some skew, and our shapiro-wilk test tells us that our data is not normal.
 # however, since ANOVA are robust to deviations from normality, we will proceed and check 

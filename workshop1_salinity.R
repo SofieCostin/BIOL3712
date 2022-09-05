@@ -125,9 +125,10 @@ hist(asratio_df$leafNoRatio)
 # Sometimes, to bring our data closer to normality, we can remove some outliers. 
 # We need to explore this visually using boxplots, for both our species and our salt concentration. 
 
-# we're going to use the package 'ggpubr' to make some plots to visualise our group differences
+# we're going to use the package 'ggpubr' to make some plots to visualise our group differences. This first needs
+#installing like so:
 
-# install.packages("ggpubr")
+install.packages("ggpubr")
 library(ggpubr)
 library(dplyr)
 
@@ -217,7 +218,7 @@ TukeyHSD(leafno.aov, which = "saltConc")
 ?ggline
 
 
-ggline(shootHtRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "species",
+ggline(leafNoRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "species",
        add = c("mean_se"),
        xlab = "salt concentration (g/L)",
        ylab = "number of leaves (ratio to control mean)",
@@ -225,6 +226,11 @@ ggline(shootHtRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "spec
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
 
+
+# Congratulations! You've now gone through ALL code you will need to use for this prac!
+# The next analyses use exactly the same functions as for the leafNoRatio variable. The
+#code will now have fewer and fewer comments as you get more used to repeating the same
+#analyses.
 
 # Root length as a Ratio of Control Mean ----------------------------------
 

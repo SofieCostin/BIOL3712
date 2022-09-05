@@ -322,13 +322,6 @@ str(asratio_df)
 alldata_df <- cbind.data.frame(species, saltConc, fwShootRoot, dwShootRoot, 
                                shootMoist, rootMoist, totMoist)
 
-# we'll save this as a .csv for later:
-getwd() # find the path for your working directory then paste it as your output path
-# in the line below:
-path_out = " ## enter your filepath here, make sure it ends with /"
-write.csv(alldata_df,paste(path_out,'alldata_df.csv'))
-
-
 # Next, we need to perform some assumption testing. This is like checking in the 
 # pantry to see what ingredients you have. If you have eggs, flour, milk, and sugar, 
 # you can make a cake. If you have eggs, milk, bacon and cheese

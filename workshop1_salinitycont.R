@@ -1,8 +1,17 @@
 # ******************************************************************************
 
+###                     Rex and Sof's Salinity Workshop                      ###
+
+# ******************************************************************************
+
+# ******************************************************************************
+
 # Salinity Data Analysis continued ----------------
 
 # ******************************************************************************
+
+### PLEASE NOTE THAT USING THIS CODE WILL VOID YOUR CHANCE AT GETTING AN HD FOR 
+### THIS PART OF THE ASSIGNMENT
 
 # first, we're going to clear the data from our global environment, so we have a 
 # fresh start
@@ -13,7 +22,6 @@ rm(list = ls())
 library(ggpubr)
 library(dplyr)
 library(car)
-
 
 # Let's import our data
 
@@ -395,4 +403,6 @@ ggline(totMoist_noOutliers, x = "saltConc", y = "totMoist", color = "species",
        legend = "right")
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
+
+### well done!
 

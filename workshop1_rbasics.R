@@ -19,6 +19,7 @@
 # they will all be contained within the same folder.
 
 # selecting one/many line/s and hitting ctrl/cmd + enter/return will run the selected code.
+
 ### Basic syntax ###
 
 # R can be used as a calculator, similar to excel.
@@ -36,6 +37,8 @@
 sqrt(4)
 # Notice the solution is presented in the Console panel below.
 
+# Workbook question 1a: --------
+# please write and run three lines of code to answer three simple maths problems
 
 ### The arrow '<-' is called the 'Assignment Operator' in R ###
 # It is used to assign information to an object.
@@ -64,14 +67,25 @@ clean_shoes <- dirty_socks*15
 # 2) No spaces allowed in object names between words. Instead use '_' or '.'
 #### In out lab, we use '_' for objects and '.' for functions!!!
 
+
 ### Functions ###
 
 # A function is a piece of code written to carry out a specified task.
 # They are made for our convenience by other researchers. 
 # Bless their cotton socks :D
 
-# These functions are stored in packages
+# If you want to print something in your console, you can use the cat function. 
+cat("I would rather wear no socks than dirty socks")
 
+
+# Workbook question 1b: ---------------------------------------------------
+# tell me what your name is!
+
+# create an object for your name:
+myname <- "sofie costin" # enter your name here
+cat("************ My name is", myname, "************")
+
+# These functions are stored in packages
 
 ### Packages ###
 
@@ -126,6 +140,13 @@ vesper3 <- c(1:6,10:18)
 vesper3
 # This can be important for selecting specific data from a larger dataset.
 
+
+# Workbook question 1c: ----------------------------------------------------
+# create a vector using 16 numbers of your choice. you can call it anything you like
+
+
+
+
 ## A matrix ##
 
 # A matrix consists of rows and columns. A 2-dimensional array. 
@@ -148,6 +169,13 @@ manhattan3
 # Both can usually be presented as 'T' and 'F' as well and almost never need 
 # quotation marks unlike other arguments.
 
+
+# Workbook question 1d: ---------------------------------------------------
+# turn your vector into a matrix with four rows
+
+
+
+
 ## A dataframe ##
 
 # A dataframe is similar to a matrix, in that it consists of rows and columns. 
@@ -163,6 +191,12 @@ manhattan_df$new <- c('one', 'two', 'three')
 names(manhattan_df)[1] <- 'icePlease'
 # check out our new dataframe:
 str(manhattan_df) # shows us our column labels, our data types, and the first few data points.
+
+
+
+# Workbook question 1e:  --------------------------------------------------
+# turn your vector into a dataframe. add a column called 'pie' of characters (words) that relate to pies.
+# rename another column to be called 'pizza'
 
 
 ## An array ##
@@ -230,6 +264,8 @@ species
 # information in your global environment, which is especially handy when your code 
 # takes a long time to run.
 
-# If you want to print something in your console, you can use the print function
+
 
 print("congratulations, now it's time to start your salinity analysis!")
+
+

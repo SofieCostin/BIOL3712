@@ -9,27 +9,46 @@
 
 rm(list = ls())
 
+# and load our libraries
+library(ggpubr)
+library(dplyr)
+library(car)
+
 
 # Let's import our data
 
-# the folder we are working in is called our "working directory". It is good 
-# convention to keep everything you're working on in this folder. You can check 
-# you're using the correct working directory by using 
-getwd()
-# lets load the .csv we created in the last script:
-alldata_df <- na.omit(data.frame(read.csv("alldata_df.csv")))  
-head(alldata_df) # and we can check that everything looks right
-# we need salt concentration to be a charachter rather than numeric
-alldata_df$saltConc <- as.character(all_data$salt_conc) 
+all_data <- na.omit(data.frame(read.csv("2022_data.csv")))  
+# read.csv will import the data from our working directory
+head(all_data) 
+# note that we now have all_data in our global environment, which is 108 observations 
+# of 20 variables
+# the name of our species column is a little weird, so lets sort that out:
+names(all_data)[1] <- 'species'
+# and we can check that everything looks as we expect it to:
+str(all_data)
+
+
+# Let's assign all of the variables we're going to use to their own object. 
+species <- all_data$species
+saltConc <- as.character(all_data$salt_conc) 
+fwShootRoot <- all_data$fw_shoot_root_ratio
+dwShootRoot <- all_data$dw_shoot_root_ratio
+shootMoist <- all_data$shoot_moisture
+rootMoist <- all_data$root_moisture
+totMoist <- all_data$total_moisture
+
+alldata_df <- cbind.data.frame(species, saltConc, fwShootRoot, dwShootRoot, 
+                               shootMoist, rootMoist, totMoist)
+
+# check all is as we expect:
 str(alldata_df)
-summary(alldata_df)
 
 # Fresh weight root to shoot ratio ----------------------------------
 
 ### Assumption 1: data are normally distributed
 shapiro.test(alldata_df$fwShootRoot)
 
-hist(alldata_df$fwShootRoot)
+hist(alldata_df$fwShootRoot, breaks = 100)
 
 # woah, something whacky is happening here. Let's open our data and have a look
 # what can you see is wrong? we need to remove some outliers
@@ -87,7 +106,7 @@ group_by(fwShootRoot_noOutliers, species, saltConc) %>%
 
 # post-hoc test
 
-TukeyHSD(leafno.aov, which = "saltConc")
+TukeyHSD(fwShootRoot.aov, which = "saltConc")
 # when interpreting the output, diff: difference between means of the two groups, 
 # lwr & upr: the lower and the upper end point of the confidence interval at 95%, 
 # p adj: p-value after adjustment for the multiple comparisons.

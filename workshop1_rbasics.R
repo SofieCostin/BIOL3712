@@ -10,15 +10,23 @@
 
 # ******************************************************************************
 
-# First thing's first. The hash symbol '#' is known as the 'commenting symbol'.
-# It is used to make notes that are not recognized as code by the software.
+# First thing's first.The hash symbol '#' is known as the 'commenting symbol'.
+# It is used to make notes that are not recognized as code by the software. 
 
+#You are reading this code in Rstudio. Rstudio is NOT R! Rstudio is an editing
+#software that sends code you've written to R for executing. You can see the R 
+#console below. Using Rstudio, you can slowly build your analyses and re-run 
+#them as often as you like. If something does not work, you can fiddle with 
+#it in Rstudio and send it back to R.
+
+# selecting one/many line/s and hitting ctrl/cmd + enter/return will run the selected code
+#(but it won't run anything that has a #-symbol at the start).
 
 # For every analysis, you should begin a new R script and save it to a file that
 # contains your data. This means that when you import and save files and images,
 # they will all be contained within the same folder.
 
-# selecting one/many line/s and hitting ctrl/cmd + enter/return will run the selected code.
+
 
 ### Basic syntax ###
 
@@ -38,7 +46,8 @@ sqrt(4)
 # Notice the solution is presented in the Console panel below.
 
 # Workbook question 1a: --------
-# please write and run three lines of code to answer three simple maths problems
+# please write and run three lines of code to answer three simple maths 
+#problems (like the examples above)
 
 ### The arrow '<-' is called the 'Assignment Operator' in R ###
 # It is used to assign information to an object.
@@ -65,7 +74,7 @@ clean_shoes <- dirty_socks*15
 ### TWO NOTES ON THIS ###
 # 1) R is case-sensitive! Be careful!
 # 2) No spaces allowed in object names between words. Instead use '_' or '.'
-#### In out lab, we use '_' for objects and '.' for functions!!!
+#### In our lab, we use '_' for objects and '.' for functions!!!
 
 
 ### Functions ###
@@ -74,7 +83,7 @@ clean_shoes <- dirty_socks*15
 # They are made for our convenience by other researchers. 
 # Bless their cotton socks :D
 
-# If you want to print something in your console, you can use the cat function. 
+# For example, if you want to print something in your console, you can use the cat function. 
 cat("I would rather wear no socks than dirty socks")
 
 
@@ -90,7 +99,8 @@ cat("************ My name is", myname, "************")
 ### Packages ###
 
 # Some are automatically loaded when you start R. For example, 'stats'
-# To view a package's contents:
+# To view a package's contents (this will open a new window, but 
+#this code is on the tab to the left):
 library(help = "stats")
 # This will open a new window listing all of the details of the package.
 # This should include the authors for citations and all functions to search.
@@ -156,6 +166,7 @@ vesper3
 ?matrix
 # We'll name this one after the Manhattan cocktail. 
 # I had a Manhattan in Manhattan once - very nice :D
+#Here, we distribute the vesper vector (1:18) across three rows (i.e. 3 rows with 6 columns each = 18)
 manhattan <- matrix(c(1:18), nrow=3)
 manhattan
 # Note that we can also do this with our vesper vector
@@ -179,7 +190,7 @@ manhattan3
 ## A dataframe ##
 
 # A dataframe is similar to a matrix, in that it consists of rows and columns. 
-# The key difference is, that a dataframe can included data of different types. 
+# The key difference is, that a dataframe can include data of different types. 
 # we can use the as.data.frame function to turn our manhattan matrix into a dataframe
 manhattan_df <- as.data.frame(manhattan)
 # if we compare our manhattan matrix with our manhattan data frame, we can notice a few differences.
@@ -187,8 +198,12 @@ manhattan
 manhattan_df
 # we can then add a column of characters (called "new") to our manhattan_df
 manhattan_df$new <- c('one', 'two', 'three')
-# and we can rename one of our column headers
+manhattan_df
+# and we can rename one of our column headers (here, we use column 1 by typing [1], 
+#but it could be column 2 if you typed [2])
 names(manhattan_df)[1] <- 'icePlease'
+manhattan_df
+
 # check out our new dataframe:
 str(manhattan_df) # shows us our column labels, our data types, and the first few data points.
 
@@ -196,6 +211,7 @@ str(manhattan_df) # shows us our column labels, our data types, and the first fe
 
 # Workbook question 1e:  --------------------------------------------------
 # turn your vector into a dataframe. add a column called 'pie' of characters (words) that relate to pies.
+#(this is equivalent to the addition of the manhattan_df$new column)
 # rename another column to be called 'pizza'
 
 

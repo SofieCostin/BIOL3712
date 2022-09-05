@@ -82,6 +82,8 @@ hist(fwShootRoot_noOutliers$fwShootRoot)
 
 ggboxplot(fwShootRoot_noOutliers, x = "saltConc", y = "fwShootRoot", color = "species")
 
+table(fwShootRoot_noOutliers$species, fwShootRoot_noOutliers$saltConc)
+
 # looks pretty good. Let's proceed.
 
 ### Assumption 2: variances are homogeneous
@@ -90,18 +92,7 @@ library(car) # access the car package
 
 leveneTest(fwShootRoot ~ species*saltConc, data = fwShootRoot_noOutliers)
 
-# we're going to check how many replicates we have for each of our factors
-table(species, saltConc)
-
 ### two-way ANOVA
-
-# now that we have the ingredients, let's bake our lovely ANOVA cake!
-# the null hypotheses for a two-way ANOVA are:
-#       > there is no difference in the means of factor A
-#       > there is no difference in the means of factor B
-#       > there is no interaction between factor A and B. 
-# if the p-value for our ANOVA is >0.05, we reject the null, and find that there 
-# is a significant difference or interaction.
 
 fwShootRoot.aov <- aov(fwShootRoot ~ species * saltConc, data = fwShootRoot_noOutliers)
 summary(fwShootRoot.aov)
@@ -163,12 +154,12 @@ hist(dwShootRoot_noOutliers$dwShootRoot)
 
 ggboxplot(dwShootRoot_noOutliers, x = "saltConc", y = "dwShootRoot", color = "species")
 
+table(dwShootRoot_noOutliers$species, dwShootRoot_noOutliers$saltConc)
+
+
 ### Assumption 2: variances are homogeneous
 
-library(car) # access the car package
-
 leveneTest(dwShootRoot ~ species*saltConc, data = dwShootRoot_noOutliers)
-
 
 ### two-way ANOVA
 
@@ -176,7 +167,7 @@ dwShootRoot.aov <- aov(dwShootRoot ~ species * saltConc, data = dwShootRoot_noOu
 summary(dwShootRoot.aov)
 
 # we can generate some summary statistics for our response data, depending on our two factors:
-require("dplyr")
+
 group_by(dwShootRoot_noOutliers, species, saltConc) %>%
   summarise(count = n(),mean = mean(dwShootRoot, na.rm = TRUE),
             sd = sd(dwShootRoot, na.rm = TRUE))
@@ -232,6 +223,9 @@ hist(shootMoist_noOutliers$shootMoist)
 
 ggboxplot(shootMoist_noOutliers, x = "saltConc", y = "shootMoist", color = "species")
 
+table(shootMoist_noOutliers$species, shootMoist_noOutliers$saltConc)
+
+
 ### Assumption 2: variances are homogeneous
 
 library(car) # access the car package
@@ -244,8 +238,7 @@ leveneTest(shootMoist ~ species*saltConc, data = shootMoist_noOutliers)
 shootMoist.aov <- aov(shootMoist ~ species * saltConc, data = shootMoist_noOutliers)
 summary(shootMoist.aov)
 
-# we can generate some summary statistics for our response data, depending on our two factors:
-require("dplyr")
+# summary statistics
 group_by(shootMoist_noOutliers, species, saltConc) %>%
   summarise(count = n(),mean = mean(shootMoist, na.rm = TRUE),
             sd = sd(shootMoist, na.rm = TRUE))
@@ -300,9 +293,10 @@ hist(rootMoist_noOutliers$rootMoist)
 
 ggboxplot(rootMoist_noOutliers, x = "saltConc", y = "rootMoist", color = "species")
 
-### Assumption 2: variances are homogeneous
+table(rootMoist_noOutliers$species, rootMoist_noOutliers$saltConc)
 
-library(car) # access the car package
+
+### Assumption 2: variances are homogeneous
 
 leveneTest(rootMoist ~ species*saltConc, data = rootMoist_noOutliers)
 
@@ -313,7 +307,7 @@ rootMoist.aov <- aov(rootMoist ~ species * saltConc, data = rootMoist_noOutliers
 summary(rootMoist.aov)
 
 # we can generate some summary statistics for our response data, depending on our two factors:
-require("dplyr")
+
 group_by(rootMoist_noOutliers, species, saltConc) %>%
   summarise(count = n(),mean = mean(rootMoist, na.rm = TRUE),
             sd = sd(rootMoist, na.rm = TRUE))
@@ -368,9 +362,10 @@ hist(totMoist_noOutliers$totMoist)
 
 ggboxplot(totMoist_noOutliers, x = "saltConc", y = "totMoist", color = "species")
 
-### Assumption 2: variances are homogeneous
+table(totMoist_noOutliers$species, totMoist_noOutliers$saltConc)
 
-library(car) # access the car package
+
+### Assumption 2: variances are homogeneous
 
 leveneTest(totMoist ~ species*saltConc, data = totMoist_noOutliers)
 
@@ -405,4 +400,3 @@ ggline(totMoist_noOutliers, x = "saltConc", y = "totMoist", color = "species",
 # once we're happy with our plot, we click "export" and save it in our working folder.
 
 ### well done!
-

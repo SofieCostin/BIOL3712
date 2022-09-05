@@ -94,33 +94,6 @@ cat("I would rather wear no socks than dirty socks")
 myname <- "sofie costin" # enter your name here
 cat("************ My name is", myname, "************")
 
-# These functions are stored in packages
-
-### Packages ###
-
-# Some are automatically loaded when you start R. For example, 'stats'
-# To view a package's contents (this will open a new window, but 
-#this code is on the tab to the left):
-library(help = "stats")
-# This will open a new window listing all of the details of the package.
-# This should include the authors for citations and all functions to search.
-# When you find a function that you wish to use, you can search that function
-# in the help box (bottom right window, 4th tab) and see exactly how to use it.
-# Alternatively, type '?' followed by the function.
-# For example, lets look at the function for a linear model, 'lm'
-?lm
-
-# Two other types of packages:
-# 1) Base packages: installed with R but are not automatically loaded to save 
-# memory. (see list in bottom right window, 3rd tab)
-# 2) Contributed packages: created by external parties. Must be installed and 
-# loaded. For example, 'geomorph' is specifically tailored for Geometric 
-# Morphometrics. This must be installed.
-
-# Three places to find them:
-# 1)	Search in the packages window (click install and type the package name)
-# 2)	CRAN: comprehensive R archive network. Go to https://cran.r-project.org/
-# 3)	GitHub: https://github.com/trending/r
 
 
 ### Data Formats (see reference image) ###
@@ -144,11 +117,6 @@ vesper2
 # (Note: the difference in the objects in the environment. One is class integer,
 # the other is class numeric. This doesn't matter, as R automatically converts 
 # between numeric classes.)
-# In addition, if we wished to produce a vector with only numbers one through 
-# six and ten through eighteen, we can do this easily:
-vesper3 <- c(1:6,10:18)
-vesper3
-# This can be important for selecting specific data from a larger dataset.
 
 
 # Workbook question 1c: ----------------------------------------------------
@@ -169,16 +137,10 @@ vesper3
 #Here, we distribute the vesper vector (1:18) across three rows (i.e. 3 rows with 6 columns each = 18)
 manhattan <- matrix(c(1:18), nrow=3)
 manhattan
-# Note that we can also do this with our vesper vector
+# Because the vesper vector is a vector from 1:18, the above is the same as:
 manhattan2 <- matrix(vesper, nrow=3)
 manhattan2
 # Notice how the numbers have been distributed by columns? 
-# We can switch this to distribute the numbers by rows if desired.
-manhattan3 <- matrix(vesper, nrow=3, byrow=TRUE)
-manhattan3
-# 'TRUE' and 'FALSE' arguments in R are called 'logical' arguments.
-# Both can usually be presented as 'T' and 'F' as well and almost never need 
-# quotation marks unlike other arguments.
 
 
 # Workbook question 1d: ---------------------------------------------------
@@ -214,12 +176,6 @@ str(manhattan_df) # shows us our column labels, our data types, and the first fe
 #(this is equivalent to the addition of the manhattan_df$new column)
 # rename another column to be called 'pizza'
 
-
-## An array ##
-
-# An array is a stack of matrices (layers), making it three-dimensional. 
-# We aren't going to use arrays in this analysis, you just need to know that they 
-# exist :)
 
 
 # You can clear the environment with the following function:
@@ -283,3 +239,35 @@ species
 
 
 print("congratulations, now it's time to start your salinity analysis!")
+
+
+
+######~~~~~~~Some additional info for the nerds among you :-D ~~~~~~######
+
+# These functions are stored in packages
+
+### Packages ###
+
+# Some are automatically loaded when you start R. For example, 'stats'
+# To view a package's contents (this will open a new window, but 
+#this code is on the tab to the left):
+library(help = "stats")
+# This will open a new window listing all of the details of the package.
+# This should include the authors for citations and all functions to search.
+# When you find a function that you wish to use, you can search that function
+# in the help box (bottom right window, 4th tab) and see exactly how to use it.
+# Alternatively, type '?' followed by the function.
+# For example, lets look at the function for a linear model, 'lm'
+?lm
+
+# Two other types of packages:
+# 1) Base packages: installed with R but are not automatically loaded to save 
+# memory. (see list in bottom right window, 3rd tab)
+# 2) Contributed packages: created by external parties. Must be installed and 
+# loaded. For example, 'geomorph' is specifically tailored for Geometric 
+# Morphometrics. This must be installed.
+
+# Three places to find them:
+# 1)	Search in the packages window (click install and type the package name)
+# 2)	CRAN: comprehensive R archive network. Go to https://cran.r-project.org/
+# 3)	GitHub: https://github.com/trending/r

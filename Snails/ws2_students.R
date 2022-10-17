@@ -94,7 +94,19 @@ data_rm <- data.frame(filter(data_rm1, do_consumed > Lower & do_consumed < Upper
 
 
 
-# are we happy with this? are your data normally distributed?
+# are we happy with this? are your data normally distributed? did anything change?
+
+# when inspecting our data frame, we can see some problematic values in both the 15 and 18 degree treatments.
+# let's remove all values under 10 to get rid of these. 
+# why might these values be an issue? make sure to include justification
+
+data_rm <- data.frame(filter(data_rm, do_consumed > 10 )) # this will overwrite data_rm with a new data frame
+
+# RETEST NORMALITY USING SHAPIRO WILK & HISTOGRAM (one last time...)
+
+
+
+
 
 # when reporting this in our methods section, we need to include the outcomes of the test, 
 # and how many outliers were removed. 

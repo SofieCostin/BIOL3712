@@ -111,6 +111,11 @@ data_rm <- data.frame(filter(data_rm, do_consumed > 10 )) # this will overwrite 
 # when reporting this in our methods section, we need to include the outcomes of the test, 
 # and how many outliers were removed. 
 
+# We can check what outliers were removed using:
+removed_data_points <- which(!data$do_consumed %in% data_rm$do_consumed)
+data[removed_data_points,]
+
+
 # assumption 2: variances are homogenous ----------------------------------
 
 # LEVENE'S TEST FOR HOMOGENEITY OF VARIANCE
@@ -120,7 +125,7 @@ data_rm <- data.frame(filter(data_rm, do_consumed > 10 )) # this will overwrite 
 
 
 
-
+# if your Levene's test has errors, please see one of the demonstrators to fix it
 
 # you must report the outcome of this in your methods section
 
@@ -128,7 +133,7 @@ data_rm <- data.frame(filter(data_rm, do_consumed > 10 )) # this will overwrite 
 # ANOVA -------------------------------------------------------------------
 
 # the null hypothesis for ANOVA is that there is no difference in means.
-# if the p-value for our ANOVA is >0.05, we reject the null, and find that there 
+# if the p-value for our ANOVA is <0.05, we reject the null, and find that there 
 # is a significant difference between the means
 
 # you will need to edit this code to make y your response variable and x your predictor variable

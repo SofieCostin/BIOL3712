@@ -172,7 +172,7 @@ str(manhattan_df) # shows us our column labels, our data types, and the first fe
 
 
 # Workbook question 1e:  --------------------------------------------------
-# turn your vector into a dataframe. add a column called 'pie' of characters (words) that relate to pies.
+# turn your matrix into a dataframe. add a column called 'pie' of characters (words) that relate to pies.
 #(this is equivalent to the addition of the manhattan_df$new column)
 # rename another column to be called 'pizza'
 

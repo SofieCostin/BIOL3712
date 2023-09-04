@@ -27,7 +27,7 @@ getwd()
 # your data should be saved in your working directory folder. You can then easily
 # access this data:
 
-all_data <- na.omit(data.frame(read.csv("2022_data.csv")))  
+all_data <- na.omit(data.frame(read.csv("salinitydata2023.csv")))  
 # read.csv will import the data from our working directory
 head(all_data) 
 # note that we now have all_data in our global environment, which is ##### observations 

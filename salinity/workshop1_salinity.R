@@ -185,7 +185,7 @@ leveneTest(leafNoRatio ~ species*saltConc, data = leafNoRatio_noOutliers)
 #       > there is no difference in the means of factor A
 #       > there is no difference in the means of factor B
 #       > there is no interaction between factor A and B. 
-# if the p-value for our ANOVA is >0.05, we reject the null, and find that there 
+# if the p-value for our ANOVA is <0.05, we reject the null, and find that there 
 # is a significant difference or interaction.
 
 leafno.aov <- aov(leafNoRatio ~ species * saltConc, data = leafNoRatio_noOutliers)

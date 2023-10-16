@@ -210,7 +210,7 @@ ggplot(data_means_sd, aes(x=temp, y=mean_do)) + # creates the blank plot
   geom_point() + # adds the points
   geom_line(aes(y=mean_do), color = "black", group=1) + # adds the line
   geom_errorbar(aes(ymin=lower_limit, ymax=upper_limit, width=0.25)) + # adds error bars
-  xlab("temperature (degrees celcius)") + # adds y axis label
+  xlab("temperature (degrees celsius)") + # adds y axis label
   ylab("dissolved oxygen consumption rate (mg/kg/hour)") + # adds x axis label
   scale_y_continuous(limits = c(0,100), breaks = seq(0,100, by = 10)) + # changes y axis scale
   geom_text(aes(label = c("a", "b", "c", "d", "e", "f"), fontface = "bold"), nudge_y = 37) + # adds labels

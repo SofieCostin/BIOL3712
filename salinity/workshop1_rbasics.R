@@ -1,26 +1,24 @@
 # ******************************************************************************
-
-###                     Rex and Sof's Salinity Workshop                      ###
-
-# ******************************************************************************
-
+###                  BIOL3712,  Flinders University, SA                      ###
+###                     Introduction to R programming                        ###
+###           By Sofie Costin, based on material from Rex Mitchell           ###
+### https://www.youtube.com/playlist?list=PL42DD6-0IeVOc4rnMKwAcx6zCww5vzjV_ ###
+###                     Last updated 04/09/2024                             ###
 # ******************************************************************************
 
 # Introduction to R -------------------------------------------------------
 
-# ******************************************************************************
-
 # First thing's first.The hash symbol '#' is known as the 'commenting symbol'.
 # It is used to make notes that are not recognized as code by the software. 
 
-#You are reading this code in Rstudio. Rstudio is NOT R! Rstudio is an editing
-#software that sends code you've written to R for executing. You can see the R 
-#console below. Using Rstudio, you can slowly build your analyses and re-run 
-#them as often as you like. If something does not work, you can fiddle with 
-#it in Rstudio and send it back to R.
+# You are reading this code in Rstudio. Rstudio is NOT R! Rstudio is an editing
+# software that sends code you've written to R for executing. You can see the R 
+# console below. Using Rstudio, you can slowly build your analyses and re-run 
+# them as often as you like. If something does not work, you can fiddle with 
+# it in Rstudio and send it back to R.
 
 # selecting one/many line/s and hitting ctrl/cmd + enter/return will run the selected code
-#(but it won't run anything that has a #-symbol at the start).
+# (but it won't run anything that has a #-symbol at the start).
 
 # For every analysis, you should begin a new R script and save it to a file that
 # contains your data. This means that when you import and save files and images,
@@ -47,12 +45,13 @@ sqrt(4)
 
 # Workbook question 1a: --------
 # please write and run three lines of code to answer three simple maths 
-#problems (like the examples above)
+# problems (like the examples above)
 
-### The arrow '<-' is called the 'Assignment Operator' in R ###
+# The arrow '<-' is called the 'Assignment Operator' in R
 # It is used to assign information to an object.
 
-# You can name the object anything you like.
+# You can name the object anything you like. For example, let''s create an object called 'dirty socks', 
+# and store a simple math problem inside.
 dirty_socks <- 2+2
 # Notice that the object appears in the Environment window (top right).
 
@@ -91,7 +90,7 @@ cat("I would rather wear no socks than dirty socks")
 # tell me what your name is!
 
 # create an object for your name:
-myname <- "sofie costin" # enter your name here
+myname <- "sofie costin" # enter your name here instead of my name
 cat("************ My name is", myname, "************")
 
 
@@ -101,19 +100,18 @@ cat("************ My name is", myname, "************")
 ## A vector ##
 
 # A vector: 1 or more numbers in a 1-dimensional row of all the same data type
-# Lets make a vector of numbers 1 through 18. 
-# We'll name it after the Vesper martini - a delicious cocktail that was created 
-# by Ian Fleming for James Bond in the original Casino Royale novel ;)
-vesper <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18)
+# Lets make a vector of numbers 1 through 18. We are going to call it 'vec' - short for vector.
+
+vec <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18)
 # The 'c' stands for concatenate or combine. It creates a temporary list for
 # assignment.
-# Notice that 'vesper' has appeared in the environment to the right.
+# Notice that 'vec' has appeared in the environment to the right.
 # If you run the object as code, the vector will be presented in the console.
-vesper
+vec
 # Instead of writing all numbers, you can shorten this by just separating the 
 # maximum and minimum values by a colon ':'
-vesper2 <- c(1:18)
-vesper2
+vec2 <- c(1:18)
+vec2
 # (Note: the difference in the objects in the environment. One is class integer,
 # the other is class numeric. This doesn't matter, as R automatically converts 
 # between numeric classes.)
@@ -132,14 +130,14 @@ vesper2
 # Let's make a matrix this time, using the same numbers, but divided into 3 rows.
 # This time we use the 'matrix' function
 ?matrix
-# We'll name this one after the Manhattan cocktail. 
-# I had a Manhattan in Manhattan once - very nice :D
-#Here, we distribute the vesper vector (1:18) across three rows (i.e. 3 rows with 6 columns each = 18)
-manhattan <- matrix(c(1:18), nrow=3)
-manhattan
-# Because the vesper vector is a vector from 1:18, the above is the same as:
-manhattan2 <- matrix(vesper, nrow=3)
-manhattan2
+# We'll name this one 'mat'- short for matrix
+
+#Here, we distribute the vec vector (1:18) across three rows (i.e. 3 rows with 6 columns each = 18)
+mat <- matrix(c(1:18), nrow=3)
+mat
+# Because the 'vec' vector is a vector from 1:18, the above is the same as:
+mat2 <- matrix(vec, nrow=3)
+mat2
 # Notice how the numbers have been distributed by columns? 
 
 
@@ -153,27 +151,27 @@ manhattan2
 
 # A dataframe is similar to a matrix, in that it consists of rows and columns. 
 # The key difference is, that a dataframe can include data of different types. 
-# we can use the as.data.frame function to turn our manhattan matrix into a dataframe
-manhattan_df <- as.data.frame(manhattan)
-# if we compare our manhattan matrix with our manhattan data frame, we can notice a few differences.
-manhattan
-manhattan_df
-# we can then add a column of characters (called "new") to our manhattan_df
-manhattan_df$new <- c('one', 'two', 'three')
-manhattan_df
+# we can use the as.data.frame function to turn our 'mat' matrix into a dataframe
+mat_df <- as.data.frame(mat)
+# if we compare our mat matrix with our mat data frame, we can notice a few differences.
+mat
+mat_df
+# we can then add a column of characters (called "new") to our mat_df
+mat_df$new <- c('one', 'two', 'three')
+mat_df
 # and we can rename one of our column headers (here, we use column 1 by typing [1], 
 #but it could be column 2 if you typed [2])
-names(manhattan_df)[1] <- 'icePlease'
-manhattan_df
+names(mat_df)[1] <- 'case'
+mat_df
 
 # check out our new dataframe:
-str(manhattan_df) # shows us our column labels, our data types, and the first few data points.
+str(mat_df) # shows us our column labels, our data types, and the first few data points.
 
 
 
 # Workbook question 1e:  --------------------------------------------------
 # turn your matrix into a dataframe. add a column called 'pie' of characters (words) that relate to pies.
-#(this is equivalent to the addition of the manhattan_df$new column)
+# (this is equivalent to the addition of the 'mat_df$new' column)
 # rename another column to be called 'pizza'
 
 
@@ -181,7 +179,7 @@ str(manhattan_df) # shows us our column labels, our data types, and the first fe
 # You can clear the environment with the following function:
 rm(list = ls())
 # Alternatively, click on the broom icon above the environment window. 
-# The same icon is present in the console and Plots windows.
+# The same icon is present in the console and plots windows.
 
 
 ### Now lets look at some data!!! ###
@@ -208,7 +206,7 @@ summary(iris)
 # prints number of individuals, variable means, sds, IQR, etc
 # NOTE: the data is essentially a matrix by coordinates. SO we can extract any
 # data via their coordinates, just like before!
-# Data[1,2] will give us the first value of the second column (sepal width)
+# for exammple, data[1,2] will give us the first value of the second column (sepal width)
 data[1,2]
 
 
@@ -221,7 +219,7 @@ data[1,2]
 # For example, we can allocate the variable of sepal length to its own object:
 sepalL <- data$Sepal.Length
 sepalL 
-# Sepal length is now a vector with 150 entries.
+# Sepal length is now a vector with 150 entries - check this in the environment
 
 # Lets do this for all variables. It's not necessary, but it shortens lines of code.
 sepalW <- data$Sepal.Width

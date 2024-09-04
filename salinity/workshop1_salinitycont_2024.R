@@ -25,7 +25,7 @@ library(car)
 
 # Let's import our data
 
-all_data <- na.omit(data.frame(read.csv("2022_data.csv")))  
+all_data <- na.omit(data.frame(read.csv("Salinity_data.csv")))  
 # read.csv will import the data from our working directory
 head(all_data) 
 # note that we now have all_data in our global environment, which is 108 observations 
@@ -74,6 +74,8 @@ Upper <- quartiles[2] + 1.5*IQR
 # which we will use for the analysis.
 fwShootRoot_noOutliers <- filter(alldata_df, fwShootRoot > Lower & fwShootRoot < Upper )
 
+#There are still some clearly horrible data in here. Let's take them out. 
+
 # After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
 shapiro.test(fwShootRoot_noOutliers$fwShootRoot)
 
@@ -82,9 +84,21 @@ hist(fwShootRoot_noOutliers$fwShootRoot)
 
 ggboxplot(fwShootRoot_noOutliers, x = "saltConc", y = "fwShootRoot", color = "species")
 
+#This is still not great. Normally, we would go thorugh and remove the offending data in the dataset, but this will be too confusing. But again, some of the plants have been shooting atypically fast, so it's OK to take out any values that are very high, e.g. higher than 1.5:
+fwShootRoot_noOutliers <- filter(alldata_df, fwShootRoot < 1.6 )
+
+# Re-test for normality using our Shapiro-Wilk tests.
+shapiro.test(fwShootRoot_noOutliers$fwShootRoot)
+
+# much better
+hist(fwShootRoot_noOutliers$fwShootRoot)
+
+ggboxplot(fwShootRoot_noOutliers, x = "saltConc", y = "fwShootRoot", color = "species")
+
+
 table(fwShootRoot_noOutliers$species, fwShootRoot_noOutliers$saltConc)
 
-# looks pretty good. Let's proceed.
+# as good as it gets. Let's proceed.
 
 ### Assumption 2: variances are homogeneous
 
@@ -96,6 +110,7 @@ leveneTest(fwShootRoot ~ species*saltConc, data = fwShootRoot_noOutliers)
 
 fwShootRoot.aov <- aov(fwShootRoot ~ species * saltConc, data = fwShootRoot_noOutliers)
 summary(fwShootRoot.aov)
+#have a good look at this. What is this telling us - what follow-on tests are appropriate, which are not?
 
 # we can generate some summary statistics for our response data, depending on our two factors:
 require("dplyr")
@@ -119,7 +134,7 @@ ggline(fwShootRoot_noOutliers, x = "saltConc", y = "fwShootRoot", color = "speci
        ylab = "fresh weight shoot to root ratio (%)",
        legend = "right")
 
-# once we're happy with our plot, we click "export" and save it in our working folder.
+# once we're happy with our plot, we click "export" and save it in our working folder. 
 
 
 # Dry weight root to shoot ratio ----------------------------------
@@ -153,6 +168,8 @@ shapiro.test(dwShootRoot_noOutliers$dwShootRoot)
 hist(dwShootRoot_noOutliers$dwShootRoot)
 
 ggboxplot(dwShootRoot_noOutliers, x = "saltConc", y = "dwShootRoot", color = "species")
+
+#again, we have some interesting differences possibly due to anomalous plants, but we will assume that the ANOVA is robust to thes few outliers.
 
 table(dwShootRoot_noOutliers$species, dwShootRoot_noOutliers$saltConc)
 
@@ -230,6 +247,7 @@ table(shootMoist_noOutliers$species, shootMoist_noOutliers$saltConc)
 
 library(car) # access the car package
 
+#What does the result mean? We will continue here and assume the ANOVA is robust, but you will be able to see why this test is significant when you look at the ggboxplot above.
 leveneTest(shootMoist ~ species*saltConc, data = shootMoist_noOutliers)
 
 
@@ -300,6 +318,7 @@ table(rootMoist_noOutliers$species, rootMoist_noOutliers$saltConc)
 
 leveneTest(rootMoist ~ species*saltConc, data = rootMoist_noOutliers)
 
+#Both Shapiro or Levene test are significant - so again, this needs flagging in your report. Can you think of why the variance in the lower concentrations is so much higher than in the upper ones?
 
 ### two-way ANOVA
 

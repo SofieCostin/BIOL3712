@@ -53,9 +53,9 @@ species <- all_data$species
 saltConc <- as.character(all_data$salt_conc) 
 # salt concentration would automatically be numerical, we want it to be character, because we're 
 # using it as a categorical variable.
-leafNoRatio <- all_data$leaf_no_ratio
-shootHtRatio <- all_data$shoot_height_ratio
-rootLnRatio <- all_data$root_length_ratio
+leafNoRatio <- all_data$leaf_no_ratio_to_control_mean
+shootHtRatio <- all_data$shoot_height_ratio_to_control_mean
+rootLnRatio <- all_data$root_length_ratio_to_control_mean
 fwShootRoot <- all_data$fw_shoot_root_ratio
 dwShootRoot <- all_data$dw_shoot_root_ratio
 shootMoist <- all_data$shoot_moisture

@@ -274,7 +274,7 @@ TukeyHSD(shootMoist.aov, which = "saltConc")
 ggline(shootMoist_noOutliers, x = "saltConc", y = "shootMoist", color = "species",
        add = c("mean_se"),
        xlab = "salt concentration (g/L)",
-       ylab = "dry weight shoot to root ratio (%)",
+       ylab = "Shoot Moisture",
        legend = "right")
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
@@ -344,7 +344,7 @@ TukeyHSD(rootMoist.aov, which = "saltConc")
 ggline(rootMoist_noOutliers, x = "saltConc", y = "rootMoist", color = "species",
        add = c("mean_se"),
        xlab = "salt concentration (g/L)",
-       ylab = "dry weight shoot to root ratio (%)",
+       ylab = "Root Moisture",
        legend = "right")
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
@@ -413,7 +413,7 @@ TukeyHSD(totMoist.aov, which = "saltConc")
 ggline(totMoist_noOutliers, x = "saltConc", y = "totMoist", color = "species",
        add = c("mean_se"),
        xlab = "salt concentration (g/L)",
-       ylab = "dry weight shoot to root ratio (%)",
+       ylab = "Total Moisture",
        legend = "right")
 
 # once we're happy with our plot, we click "export" and save it in our working folder.

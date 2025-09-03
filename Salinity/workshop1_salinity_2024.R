@@ -140,7 +140,23 @@ library(dplyr)
 #plot leaf number as ratio to control mean by groups "salt concentration"
 # colour box plot by second group "species"
 
-ggboxplot(asratio_df, x = "saltConc", y = "leafNoRatio", color = "species")
+boxplot(leafNoRatio ~ saltConc, data = asratio_df,
+        xlab = "Salt Concentration and Species",
+        ylab = "Leaf Number Ratio"
+        ) ### Here the data on the x-axis is out of order, 
+          ###so we will re-arrange the data
+
+# Define the desired order for saltConc
+desired_salt_order <- c("1.5", "2.5", "5", "10", "15")
+#Reorder the factor levels in the data frame
+asratio_df$saltConc <- factor(asratio_df$saltConc, levels = desired_salt_order)
+#Verify the new order
+levels(asratio_df$saltConc)
+
+boxplot(leafNoRatio ~ saltConc, data = asratio_df,
+        xlab = "Salt Concentration and Species",
+        ylab = "Leaf Number Ratio"
+)
 
 # In this case, we can see that there are some outliers present. Generally, outliers
 # are classed as numbers outside of 1.5 * the interquartile range. 
@@ -170,7 +186,14 @@ shapiro.test(leafNoRatio_noOutliers$leafNoRatio)
 # we still have a significant p-value, but let's check out our histogram and plot data points
 hist(leafNoRatio_noOutliers$leafNoRatio)
 
-ggboxplot(leafNoRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "species")
+desired_salt_order <- c("1.5", "2.5", "5", "10", "15")
+leafNoRatio_noOutliers$saltConc <- factor(leafNoRatio_noOutliers$saltConc, levels = desired_salt_order)
+levels(leafNoRatio_noOutliers$saltConc)
+
+boxplot(leafNoRatio ~ saltConc, data = leafNoRatio_noOutliers, 
+        xlab = "saltConc",
+        ylab = "leafNoRatio"
+)
 
 # looks pa bit better but the histogram shows us that there are clearly some huge outliers above 1.4 that are probably still plants that underwent a growth spurt that made their leaf growth totally different to the othe plants. These are not comparable to all the other plants, which is why we here decide to remove them. 
 
@@ -184,7 +207,10 @@ shapiro.test(leafNoRatio_noOutliers$leafNoRatio)
 # But our histogram now shows that the values are all more or less part of the same distribution. Because ANOVAs are relatively robust to violations of non-normality, we will choose to continue here but just make sure you mention that the normality criterion was violated.
 hist(leafNoRatio_noOutliers$leafNoRatio)
 
-ggboxplot(leafNoRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "species")
+boxplot(leafNoRatio ~ saltConc, data = leafNoRatio_noOutliers, 
+        xlab = "saltConc",
+        ylab = "leafNoRatio"
+)
 
 
 ### Assumption 2: variances are homogeneous
@@ -198,18 +224,21 @@ library(car) # access the car package
 #run the test. Again, the test is highly significant but there is not much we can do about this. We will report these data as having violated both assumptions and keep going with that precaution.
 leveneTest(leafNoRatio ~ species*saltConc, data = leafNoRatio_noOutliers)
 
-### two-way ANOVA
+### one-way ANOVA
 
 # now that we have the ingredients (kind of), let's bake our lovely ANOVA cake!
-# the null hypotheses for a two-way ANOVA are:
+# the null hypotheses for a one-way ANOVA are:
 #       > there is no _difference_ in the means of factor A (barley and what don't have different mean leaf numbers)
 #       > there is no _difference_ in the means of factor B (plants don't have different mean leav numbers across salt concentrations)
 #       > there is no _interaction_ between factor A and B. (i.e. the difference in leaf numbers in a salt concentration does not depend on whether we are looking at barley or wheat)
 # if the p-value for our ANOVA is <0.05, we reject the null, and find that there 
 # is a significant difference or interaction.
+# If you get the following error "Error in leafNoRatio ~ saltConc : non-numeric argument to binary operator"
+# you need to run this code: leafNoRatio_noOutliers$saltConc <- as.numeric(leafNoRatio_noOutliers$saltConc)
 
-leafno.aov <- aov(leafNoRatio ~ species * saltConc, data = leafNoRatio_noOutliers)
+leafno.aov <- aov(leafNoRatio ~ saltConc, data = leafNoRatio_noOutliers)
 summary(leafno.aov)
+
 
  # But what does this mean? To get a feeling for this, we can generate some summary statistics for our response data, depending on our two factors. This has nothing to do with the ANOVA but it allows you to look at the magnitudes of difference between means.
 require("dplyr")
@@ -221,6 +250,7 @@ group_by(leafNoRatio_noOutliers, species, saltConc) %>%
 # which pairs of groups are different. We can use a Tukey multiple pairwise comparisons 
 # test to see where these differences lie. Since we only have two species, 
 # only need to do this for our salt concentrations:
+
 
 TukeyHSD(leafno.aov, which = "saltConc")
 # when interpreting the output, diff: difference between means of the two groups, 
@@ -236,7 +266,6 @@ TukeyHSD(leafno.aov, which = "saltConc")
 # we can explore the options for our plot using the help for ggline, 
 # have a play and see what you think shows your results the best!
 ?ggline
-
 
 ggline(leafNoRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "species",
        add = c("mean_se"),
@@ -274,7 +303,11 @@ hist(asratio_df$rootLnRatio)
 # plot root length as a ratio to control mean by groups "salt concentration"
 # colour box plot by second group "species"
 
-ggboxplot(asratio_df, x = "saltConc", y = "rootLnRatio", color = "species")
+
+boxplot(rootLnRatio ~ saltConc, data = leafNoRatio_noOutliers, 
+        xlab = "saltConc",
+        ylab = "rootLnRatio"
+)
 
 # In this case, we can see that there are some outliers present. Generally, outliers
 # are classed as numbers outside of 1.5 * the interquartile range. 
@@ -300,7 +333,11 @@ shapiro.test(rootLnRatio_noOutliers$rootLnRatio)
 hist(rootLnRatio_noOutliers$rootLnRatio)
 
 # and have another look at our new boxplots:
-ggboxplot(rootLnRatio_noOutliers, x = "saltConc", y = "rootLnRatio", color = "species")
+
+boxplot(rootLnRatio ~ saltConc, data = rootLnRatio_noOutliers, 
+        xlab = "saltConc",
+        ylab = "rootLnRatio"
+)
 
 #We still clearly have some very high and very low outliers. But it would be a bit intransparent to just take them out, since there is no good reason to do so. We will therefore leave them here and continut.
 
@@ -310,13 +347,13 @@ table(rootLnRatio_noOutliers$species, rootLnRatio_noOutliers$saltConc)
 
 # Let's do our levene's test
 
-leveneTest(rootLnRatio ~ species*saltConc, data =rootLnRatio_noOutliers)
+leveneTest(rootLnRatio ~ species*as.character(saltConc), data = rootLnRatio_noOutliers)
 
 # The variance is homogenous - phew - we're good to go!
 
 ### two-way ANOVA
 
-rootLn.aov <- aov(rootLnRatio ~ species * saltConc, data = rootLnRatio_noOutliers)
+rootLn.aov <- aov(rootLnRatio ~ saltConc, data = rootLnRatio_noOutliers)
 summary(rootLn.aov)
 
 
@@ -358,7 +395,10 @@ hist(asratio_df$shootHtRatio)
 
 # Let's look a little closer using boxplots:
 
-ggboxplot(asratio_df, x = "saltConc", y = "shootHtRatio", color = "species")
+boxplot(shootHtRatio ~ saltConc, data = asratio_df, 
+        xlab = "saltConc",
+        ylab = "shootHtRatio"
+)
 
 # Clearly some outliers, let's see if any of them are outside the IQR:
 
@@ -373,7 +413,10 @@ shootHtRatio_noOutliers <- filter(asratio_df, shootHtRatio > Lower & shootHtRati
 # now we check again:
 shapiro.test(shootHtRatio_noOutliers$shootHtRatio)
 hist(shootHtRatio_noOutliers$shootHtRatio)
-ggboxplot(shootHtRatio_noOutliers, x = "saltConc", y = "shootHtRatio", color = "species")
+boxplot(shootHtRatio ~ saltConc, data = shootHtRatio_noOutliers, 
+        xlab = "saltConc",
+        ylab = "shootHtRatio"
+)
 
 #What do you notice here? Make sure you put this into your write-up!
 table(shootHtRatio_noOutliers$species, shootHtRatio_noOutliers$saltConc)
@@ -384,13 +427,14 @@ table(shootHtRatio_noOutliers$species, shootHtRatio_noOutliers$saltConc)
 
 ### Assumption 2: variances are homogeneous
 # Let's do our levene's test
-leveneTest(shootHtRatio ~ species*saltConc, data =shootHtRatio_noOutliers)
+leveneTest(shootHtRatio ~ species*as.character(saltConc), data =shootHtRatio_noOutliers)
 
 # and we're good to go!
 
 ### two-way ANOVA
 
-shootHt.aov <- aov(shootHtRatio ~ species * saltConc, data = shootHtRatio_noOutliers)
+
+shootHt.aov <- aov(shootHtRatio ~ saltConc, data = shootHtRatio_noOutliers)
 summary(shootHt.aov)
 
 # summary statistics:
@@ -421,3 +465,4 @@ ggline(shootHtRatio_noOutliers, x = "saltConc", y = "shootHtRatio", color = "spe
 ###REMEMBER THAT THE RATIOS AND THE REMAINING VARIABLES ARE IN DIFFERENT DATA FRAMES. IF YOU GET ERRORS, IT MIGHT BE THAT YOU ARE USING THE WRONG DATA FRAME.
 
 ### good luck!
+

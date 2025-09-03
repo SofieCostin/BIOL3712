@@ -90,7 +90,7 @@ cat("I would rather wear no socks than dirty socks")
 # tell me what your name is!
 
 # create an object for your name:
-myname <- "sofie costin" # enter your name here instead of my name
+myname <- "Sofie Costin" # enter your name here instead of my name
 cat("************ My name is", myname, "************")
 
 

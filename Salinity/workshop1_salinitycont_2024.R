@@ -82,7 +82,15 @@ shapiro.test(fwShootRoot_noOutliers$fwShootRoot)
 # much better
 hist(fwShootRoot_noOutliers$fwShootRoot)
 
-ggboxplot(fwShootRoot_noOutliers, x = "saltConc", y = "fwShootRoot", color = "species")
+desired_salt_order <- c("1.5", "2.5", "5", "10", "15")
+fwShootRoot_noOutliers$saltConc <- factor(fwShootRoot_noOutliers$saltConc, levels = desired_salt_order)
+levels(fwShootRoot_noOutliers$saltConc)
+
+boxplot(fwShootRoot ~ saltConc, data = fwShootRoot_noOutliers, 
+        xlab = "saltConc",
+        ylab = "fwShootRoot"
+)
+
 
 #This is still not great. Normally, we would go thorugh and remove the offending data in the dataset, but this will be too confusing. But again, some of the plants have been shooting atypically fast, so it's OK to take out any values that are very high, e.g. higher than 1.5:
 fwShootRoot_noOutliers <- filter(alldata_df, fwShootRoot < 1.6 )
@@ -93,7 +101,14 @@ shapiro.test(fwShootRoot_noOutliers$fwShootRoot)
 # much better
 hist(fwShootRoot_noOutliers$fwShootRoot)
 
-ggboxplot(fwShootRoot_noOutliers, x = "saltConc", y = "fwShootRoot", color = "species")
+desired_salt_order <- c("1.5", "2.5", "5", "10", "15")
+fwShootRoot_noOutliers$saltConc <- factor(fwShootRoot_noOutliers$saltConc, levels = desired_salt_order)
+levels(fwShootRoot_noOutliers$saltConc)
+
+boxplot(fwShootRoot ~ saltConc, data = fwShootRoot_noOutliers, 
+        xlab = "saltConc",
+        ylab = "fwShootRoot"
+)
 
 
 table(fwShootRoot_noOutliers$species, fwShootRoot_noOutliers$saltConc)
@@ -108,7 +123,7 @@ leveneTest(fwShootRoot ~ species*saltConc, data = fwShootRoot_noOutliers)
 
 ### two-way ANOVA
 
-fwShootRoot.aov <- aov(fwShootRoot ~ species * saltConc, data = fwShootRoot_noOutliers)
+fwShootRoot.aov <- aov(fwShootRoot ~ saltConc, data = fwShootRoot_noOutliers)
 summary(fwShootRoot.aov)
 #have a good look at this. What is this telling us - what follow-on tests are appropriate, which are not?
 
@@ -144,7 +159,14 @@ shapiro.test(alldata_df$dwShootRoot)
 
 hist(alldata_df$dwShootRoot)
 
-ggboxplot(alldata_df, x = "saltConc", y = "dwShootRoot", color = "species")
+desired_salt_order <- c("1.5", "2.5", "5", "10", "15")
+alldata_df$saltConc <- factor(alldata_df$saltConc, levels = desired_salt_order)
+levels(alldata_df$saltConc)
+
+boxplot(dwShootRoot ~ saltConc, data = alldata_df, 
+        xlab = "saltConc",
+        ylab = "dwShootRoot"
+)
 
 # remove outliers
 
@@ -167,7 +189,11 @@ shapiro.test(dwShootRoot_noOutliers$dwShootRoot)
 # much better
 hist(dwShootRoot_noOutliers$dwShootRoot)
 
-ggboxplot(dwShootRoot_noOutliers, x = "saltConc", y = "dwShootRoot", color = "species")
+
+boxplot(dwShootRoot ~ saltConc, data = dwShootRoot_noOutliers, 
+        xlab = "saltConc",
+        ylab = "dwShootRoot"
+)
 
 #again, we have some interesting differences possibly due to anomalous plants, but we will assume that the ANOVA is robust to thes few outliers.
 
@@ -180,7 +206,7 @@ leveneTest(dwShootRoot ~ species*saltConc, data = dwShootRoot_noOutliers)
 
 ### two-way ANOVA
 
-dwShootRoot.aov <- aov(dwShootRoot ~ species * saltConc, data = dwShootRoot_noOutliers)
+dwShootRoot.aov <- aov(dwShootRoot ~ saltConc, data = dwShootRoot_noOutliers)
 summary(dwShootRoot.aov)
 
 # we can generate some summary statistics for our response data, depending on our two factors:
@@ -215,6 +241,11 @@ shapiro.test(alldata_df$shootMoist)
 
 hist(alldata_df$shootMoist)
 
+boxplot(shootMoist ~ saltConc, data = alldata_df, 
+        xlab = "saltConc",
+        ylab = "shootMoist"
+)
+
 ggboxplot(alldata_df, x = "saltConc", y = "shootMoist", color = "species")
 
 # remove outliers
@@ -238,7 +269,10 @@ shapiro.test(shootMoist_noOutliers$shootMoist)
 # much better
 hist(shootMoist_noOutliers$shootMoist)
 
-ggboxplot(shootMoist_noOutliers, x = "saltConc", y = "shootMoist", color = "species")
+boxplot(shootMoist ~ saltConc, data = shootMoist_noOutliers, 
+        xlab = "saltConc",
+        ylab = "shootMoist"
+)
 
 table(shootMoist_noOutliers$species, shootMoist_noOutliers$saltConc)
 
@@ -253,7 +287,7 @@ leveneTest(shootMoist ~ species*saltConc, data = shootMoist_noOutliers)
 
 ### two-way ANOVA
 
-shootMoist.aov <- aov(shootMoist ~ species * saltConc, data = shootMoist_noOutliers)
+shootMoist.aov <- aov(shootMoist ~ saltConc, data = shootMoist_noOutliers)
 summary(shootMoist.aov)
 
 # summary statistics
@@ -286,7 +320,10 @@ shapiro.test(alldata_df$rootMoist)
 
 hist(alldata_df$rootMoist)
 
-ggboxplot(alldata_df, x = "saltConc", y = "rootMoist", color = "species")
+boxplot(rootMoist ~ saltConc, data = alldata_df, 
+        xlab = "saltConc",
+        ylab = "rootMoist"
+)
 
 # remove outliers
 
@@ -309,20 +346,23 @@ shapiro.test(rootMoist_noOutliers$rootMoist)
 # much better
 hist(rootMoist_noOutliers$rootMoist)
 
-ggboxplot(rootMoist_noOutliers, x = "saltConc", y = "rootMoist", color = "species")
+boxplot(rootMoist ~ saltConc, data = rootMoist_noOutliers, 
+        xlab = "saltConc",
+        ylab = "rootMoist"
+)
 
 table(rootMoist_noOutliers$species, rootMoist_noOutliers$saltConc)
 
 
 ### Assumption 2: variances are homogeneous
 
-leveneTest(rootMoist ~ species*saltConc, data = rootMoist_noOutliers)
+leveneTest(rootMoist ~ species * saltConc, data = rootMoist_noOutliers)
 
 #Both Shapiro or Levene test are significant - so again, this needs flagging in your report. Can you think of why the variance in the lower concentrations is so much higher than in the upper ones?
 
 ### two-way ANOVA
 
-rootMoist.aov <- aov(rootMoist ~ species * saltConc, data = rootMoist_noOutliers)
+rootMoist.aov <- aov(rootMoist ~ saltConc, data = rootMoist_noOutliers)
 summary(rootMoist.aov)
 
 # we can generate some summary statistics for our response data, depending on our two factors:
@@ -356,7 +396,10 @@ shapiro.test(alldata_df$totMoist)
 
 hist(alldata_df$totMoist)
 
-ggboxplot(alldata_df, x = "saltConc", y = "totMoist", color = "species")
+boxplot(totMoist ~ saltConc, data = alldata_df, 
+        xlab = "saltConc",
+        ylab = "totMoist"
+)
 
 # remove outliers
 
@@ -379,7 +422,10 @@ shapiro.test(totMoist_noOutliers$totMoist)
 # much better
 hist(totMoist_noOutliers$totMoist)
 
-ggboxplot(totMoist_noOutliers, x = "saltConc", y = "totMoist", color = "species")
+boxplot(totMoist ~ saltConc, data = totMoist_noOutliers, 
+        xlab = "saltConc",
+        ylab = "totMoist"
+)
 
 table(totMoist_noOutliers$species, totMoist_noOutliers$saltConc)
 
@@ -391,7 +437,7 @@ leveneTest(totMoist ~ species*saltConc, data = totMoist_noOutliers)
 
 ### two-way ANOVA
 
-totMoist.aov <- aov(totMoist ~ species * saltConc, data = totMoist_noOutliers)
+totMoist.aov <- aov(totMoist ~ saltConc, data = totMoist_noOutliers)
 summary(totMoist.aov)
 
 # we can generate some summary statistics for our response data, depending on our two factors:

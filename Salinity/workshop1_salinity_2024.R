@@ -16,7 +16,8 @@
 rm(list = ls())
 
 
-# Let's import our data. If working on a Flinders Uni computer, put it on your U drive or you WILL lose all your work!
+# Let's import our data. If working on a Flinders Uni computer, 
+###put it on your U drive or you WILL lose all your work!
 
 # the folder we are working in is called our "working directory". It is good 
 # convention to keep everything you're working on in this folder. You can check 
@@ -83,12 +84,13 @@ table(asratio_df$species, asratio_df$saltConc)
 alldata_df <- cbind.data.frame(species, saltConc, fwShootRoot, dwShootRoot, 
                                shootMoist, rootMoist, totMoist)
 
-### remember, we have TWO DATA FRAMES  - one with the ratios, one with the remainder of the variables - which means that you don't find fwShootRoot in asratio_df, for example!
+### remember, we have TWO DATA FRAMES  - one with the ratios, one with the remainder of 
+##the variables - which means that you don't find fwShootRoot in asratio_df, for example!
 
 # Next, we need to perform some assumption testing. This is like checking in the 
 # pantry to see what ingredients you have. If you have eggs, flour, milk, and sugar, 
 # you can make a cake. If you have eggs, milk, bacon and cheese
-# you can make an omelette. We want to do a two-way ANOVA, but we need to check 
+# you can make an omelette. We want to do a one-way ANOVA, but we need to check 
 # that we have all of the ingredients, first. 
 # The assumptions (ingredients) of an ANOVA are:
 #     > normally distributed data
@@ -130,12 +132,14 @@ hist(asratio_df$leafNoRatio)
 
 # We need to explore this visually using boxplots, for both our species and our salt concentration. 
 
-# we're going to use the package 'ggpubr' to make some plots to visualise our group differences. This first needs
+# we're going to use the package 'RcmdrMisc' to make some plots to visualise our group differences. This first needs
 #installing like so:
 
-install.packages("ggpubr")
-library(ggpubr)
+#install.packages("RcmdrMisc")
+library(RcmdrMisc)
 library(dplyr)
+library(ggpubr)
+
 
 #plot leaf number as ratio to control mean by groups "salt concentration"
 # colour box plot by second group "species"
@@ -163,8 +167,8 @@ boxplot(leafNoRatio ~ saltConc, data = asratio_df,
 # we are going to remove these outliers. Make sure to give justification for this removal in your methods section.
 
 # first, we work out what our first and third quartiles are for our data:
-quartiles <- quantile(asratio_df$leafNoRatio, probs=c(.25, .75), na.rm = FALSE) 
-# and determine the interquartile range (IQR)
+quartiles <- quantile(asratio_df$leafNoRatio, probs=c(.25, .75), na.rm = FALSE)
+# and determine the interquartile range (IQR) 
 IQR <- IQR(asratio_df$leafNoRatio)
 
 # Then we find our lower and upper limits:
@@ -229,7 +233,7 @@ leveneTest(leafNoRatio ~ species*saltConc, data = leafNoRatio_noOutliers)
 # now that we have the ingredients (kind of), let's bake our lovely ANOVA cake!
 # the null hypotheses for a one-way ANOVA are:
 #       > there is no _difference_ in the means of factor A (barley and what don't have different mean leaf numbers)
-#       > there is no _difference_ in the means of factor B (plants don't have different mean leav numbers across salt concentrations)
+#       > there is no _difference_ in the means of factor B (plants don't have different mean leaf numbers across salt concentrations)
 #       > there is no _interaction_ between factor A and B. (i.e. the difference in leaf numbers in a salt concentration does not depend on whether we are looking at barley or wheat)
 # if the p-value for our ANOVA is <0.05, we reject the null, and find that there 
 # is a significant difference or interaction.
@@ -263,15 +267,24 @@ TukeyHSD(leafno.aov, which = "saltConc")
 # To visualise our data (and for our report), we need to generate a means plot.
 # we are going to plot our response variable by groups "saltConc", and use the colours to show the species.
 # we add error bars using mean_se
-# we can explore the options for our plot using the help for ggline, 
+# we can explore the options for our plot using the help for plotMeans, 
 # have a play and see what you think shows your results the best!
-?ggline
 
-ggline(leafNoRatio_noOutliers, x = "saltConc", y = "leafNoRatio", color = "species",
-       add = c("mean_se"),
-       xlab = "salt concentration (g/L)",
-       ylab = "number of leaves (ratio to control mean)",
-       legend = "right")
+plotMeans(leafNoRatio_noOutliers$leafNoRatio,
+          leafNoRatio_noOutliers$saltConc,
+          leafNoRatio_noOutliers$species,
+          error.bars = "se",
+          xlab = ("Salt Concerntration (g/L)"),
+          ylab = ("Leaf No Ratio (%)"),
+          pch = 21,
+          col = ("#ff007F"),
+          main=(""),
+          lty = 3,
+          legend.pos = "bottomleft",
+          legend.lab = "Species"
+          )
+
+
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
 
@@ -370,11 +383,20 @@ TukeyHSD(rootLn.aov, which = "saltConc")
 
 ### let's graph it!
 
-ggline(rootLnRatio_noOutliers, x = "saltConc", y = "rootLnRatio", color = "species",
-       add = c("mean_se"),
-       xlab = "salt concentration (g/L)",
-       ylab = "root length (ratio to control mean)",
-       legend = "right")
+plotMeans(rootLnRatio_noOutliers$rootLnRatio,
+          rootLnRatio_noOutliers$saltConc,
+          rootLnRatio_noOutliers$species,
+          error.bars = "se",
+          xlab = ("Salt Concerntration (g/L)"),
+          ylab = ("Root Length Ratio (%)"),
+          pch = 21,
+          col = ("#ff007F"),
+          main=(""),
+          lty = 3,
+          legend.pos = "bottomleft",
+          legend.lab = "Species"
+)
+
 
 #Here you can also see that the outliers are not looking like they are obscuring a very clear picture. So, all good.
 
@@ -431,7 +453,7 @@ leveneTest(shootHtRatio ~ species*as.character(saltConc), data =shootHtRatio_noO
 
 # and we're good to go!
 
-### two-way ANOVA
+### one-way ANOVA
 
 
 shootHt.aov <- aov(shootHtRatio ~ saltConc, data = shootHtRatio_noOutliers)
@@ -448,12 +470,19 @@ TukeyHSD(shootHt.aov, which = "saltConc")
 
 
 ### let's graph it!
-
-ggline(shootHtRatio_noOutliers, x = "saltConc", y = "shootHtRatio", color = "species",
-       add = c("mean_se"),
-       xlab = "salt concentration (g/L)",
-       ylab = "shoot height (ratio to control mean)",
-       legend = "right")
+plotMeans(shootHtRatio_noOutliers$shootHtRatio,
+          shootHtRatio_noOutliers$saltConc,
+          shootHtRatio_noOutliers$species,
+          error.bars = "se",
+          xlab = ("Salt Concerntration (g/L)"),
+          ylab = ("Shoot Height Ratio (%)"),
+          pch = 21,
+          col = ("#ff007F"),
+          main=(""),
+          lty = 3,
+          legend.pos = "bottomleft",
+          legend.lab = "Species"
+)
 
 # don't forget to export your plot
 

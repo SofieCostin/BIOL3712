@@ -22,6 +22,7 @@ rm(list = ls())
 library(ggpubr)
 library(dplyr)
 library(car)
+library(RcmdrMisc)
 
 # Let's import our data
 
@@ -143,11 +144,19 @@ TukeyHSD(fwShootRoot.aov, which = "saltConc")
 
 ### let's graph it!
 
-ggline(fwShootRoot_noOutliers, x = "saltConc", y = "fwShootRoot", color = "species",
-       add = c("mean_se"),
-       xlab = "salt concentration (g/L)",
-       ylab = "fresh weight shoot to root ratio (%)",
-       legend = "right")
+plotMeans(fwShootRoot_noOutliers$fwShootRoot,
+          fwShootRoot_noOutliers$saltConc,
+          fwShootRoot_noOutliers$species,
+          error.bars = "se",
+          xlab = ("Salt Concerntration (g/L)"),
+          ylab = ("fresh weight shoot to root ratio (%)"),
+          pch = 21,
+          col = ("#ff007F"),
+          main=(""),
+          lty = 3,
+          legend.pos = "bottomleft",
+          legend.lab = "Species"
+)
 
 # once we're happy with our plot, we click "export" and save it in our working folder. 
 
@@ -225,11 +234,19 @@ TukeyHSD(dwShootRoot.aov, which = "saltConc")
 
 ### let's graph it!
 
-ggline(dwShootRoot_noOutliers, x = "saltConc", y = "dwShootRoot", color = "species",
-       add = c("mean_se"),
-       xlab = "salt concentration (g/L)",
-       ylab = "dry weight shoot to root ratio (%)",
-       legend = "right")
+plotMeans(dwShootRoot_noOutliers$dwShootRoot,
+          dwShootRoot_noOutliers$saltConc,
+          dwShootRoot_noOutliers$species,
+          error.bars = "se",
+          xlab = ("Salt Concerntration (g/L)"),
+          ylab = ("Dry wieght Shoot Root ratio (%)"),
+          pch = 21,
+          col = ("#ff007F"),
+          main=(""),
+          lty = 3,
+          legend.pos = "bottomleft",
+          legend.lab = "Species"
+)
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
 
@@ -245,8 +262,6 @@ boxplot(shootMoist ~ saltConc, data = alldata_df,
         xlab = "saltConc",
         ylab = "shootMoist"
 )
-
-ggboxplot(alldata_df, x = "saltConc", y = "shootMoist", color = "species")
 
 # remove outliers
 
@@ -281,7 +296,7 @@ table(shootMoist_noOutliers$species, shootMoist_noOutliers$saltConc)
 
 library(car) # access the car package
 
-#What does the result mean? We will continue here and assume the ANOVA is robust, but you will be able to see why this test is significant when you look at the ggboxplot above.
+#What does the result mean? We will continue here and assume the ANOVA is robust, but you will be able to see why this test is significant when you look at the boxplot above.
 leveneTest(shootMoist ~ species*saltConc, data = shootMoist_noOutliers)
 
 
@@ -305,11 +320,19 @@ TukeyHSD(shootMoist.aov, which = "saltConc")
 
 ### let's graph it!
 
-ggline(shootMoist_noOutliers, x = "saltConc", y = "shootMoist", color = "species",
-       add = c("mean_se"),
-       xlab = "salt concentration (g/L)",
-       ylab = "dry weight shoot to root ratio (%)",
-       legend = "right")
+plotMeans(shootMoist_noOutliers$shootMoist,
+          shootMoist_noOutliers$saltConc,
+          shootMoist_noOutliers$species,
+          error.bars = "se",
+          xlab = ("Salt Concerntration (g/L)"),
+          ylab = ("shoot Moisture (%)"),
+          pch = 21,
+          col = ("#ff007F"),
+          main=(""),
+          lty = 3,
+          legend.pos = "bottomleft",
+          legend.lab = "Species"
+)
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
 
@@ -381,11 +404,19 @@ TukeyHSD(rootMoist.aov, which = "saltConc")
 
 ### let's graph it!
 
-ggline(rootMoist_noOutliers, x = "saltConc", y = "rootMoist", color = "species",
-       add = c("mean_se"),
-       xlab = "salt concentration (g/L)",
-       ylab = "dry weight shoot to root ratio (%)",
-       legend = "right")
+plotMeans(rootMoist_noOutliers$rootMoist,
+          rootMoist_noOutliers$saltConc,
+          rootMoist_noOutliers$species,
+          error.bars = "se",
+          xlab = ("Salt Concerntration (g/L)"),
+          ylab = ("dry weight shoot to root ratio (%)"),
+          pch = 21,
+          col = ("#ff007F"),
+          main=(""),
+          lty = 3,
+          legend.pos = "bottomleft",
+          legend.lab = "Species"
+)
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
 
@@ -456,11 +487,19 @@ TukeyHSD(totMoist.aov, which = "saltConc")
 
 ### let's graph it!
 
-ggline(totMoist_noOutliers, x = "saltConc", y = "totMoist", color = "species",
-       add = c("mean_se"),
-       xlab = "salt concentration (g/L)",
-       ylab = "dry weight shoot to root ratio (%)",
-       legend = "right")
+plotMeans(totMoist_noOutliers$totMoist,
+          totMoist_noOutliers$saltConc,
+          totMoist_noOutliers$species,
+          error.bars = "se",
+          xlab = ("Salt Concerntration (g/L)"),
+          ylab = ("Total moisture"),
+          pch = 21,
+          col = ("#ff007F"),
+          main=(""),
+          lty = 3,
+          legend.pos = "bottomleft",
+          legend.lab = "Species"
+)
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
 

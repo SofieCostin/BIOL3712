@@ -1,6 +1,6 @@
 # ******************************************************************************
 
-###                     Rex and Sof's Salinity Workshop                      ###
+###                     Sof, Maddi and Rex' Salinity Workshop               ###
 
 # ******************************************************************************
 
@@ -265,21 +265,18 @@ TukeyHSD(leafno.aov, which = "saltConc")
 ### let's graph it!
 
 # To visualise our data (and for our report), we need to generate a means plot.
-# we are going to plot our response variable by groups "saltConc", and use the colours to show the species.
-# we add error bars using mean_se
-# we can explore the options for our plot using the help for plotMeans, 
-# have a play and see what you think shows your results the best!
+# we are going to plot our response variable by groups "saltConc"
+# we add error bars using error.bars="se"
+# we can explore the options for our plot using the help for plotMeans (just type ?plotmeans into the console), 
+# (optionally!) you can have a play and see what you think shows your results the best!
 
 plotMeans(leafNoRatio_noOutliers$leafNoRatio,
           leafNoRatio_noOutliers$saltConc,
           leafNoRatio_noOutliers$species,
           error.bars = "se",
-          xlab = ("Salt Concerntration (g/L)"),
+          xlab = ("Salt Concentration (g/L)"),
           ylab = ("Leaf No Ratio (%)"),
-          pch = 21,
-          col = ("#ff007F"),
           main=(""),
-          lty = 3,
           legend.pos = "bottomleft",
           legend.lab = "Species"
           )
@@ -387,12 +384,9 @@ plotMeans(rootLnRatio_noOutliers$rootLnRatio,
           rootLnRatio_noOutliers$saltConc,
           rootLnRatio_noOutliers$species,
           error.bars = "se",
-          xlab = ("Salt Concerntration (g/L)"),
+          xlab = ("Salt Concentration (g/L)"),
           ylab = ("Root Length Ratio (%)"),
-          pch = 21,
-          col = ("#ff007F"),
           main=(""),
-          lty = 3,
           legend.pos = "bottomleft",
           legend.lab = "Species"
 )
@@ -474,12 +468,9 @@ plotMeans(shootHtRatio_noOutliers$shootHtRatio,
           shootHtRatio_noOutliers$saltConc,
           shootHtRatio_noOutliers$species,
           error.bars = "se",
-          xlab = ("Salt Concerntration (g/L)"),
+          xlab = ("Salt Concentration (g/L)"),
           ylab = ("Shoot Height Ratio (%)"),
-          pch = 21,
-          col = ("#ff007F"),
           main=(""),
-          lty = 3,
           legend.pos = "bottomleft",
           legend.lab = "Species"
 )

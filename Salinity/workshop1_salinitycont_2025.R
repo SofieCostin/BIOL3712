@@ -27,12 +27,15 @@ library(RcmdrMisc)
 # Let's import our data
 
 all_data <- na.omit(data.frame(read.csv("Salinity_data.csv")))  
+
 # read.csv will import the data from our working directory
 head(all_data) 
 # note that we now have all_data in our global environment, which is 108 observations 
 # of 20 variables
+
 # the name of our species column is a little weird, so lets sort that out:
 names(all_data)[1] <- 'species'
+
 # and we can check that everything looks as we expect it to:
 str(all_data)
 
@@ -46,6 +49,7 @@ shootMoist <- all_data$shoot_moisture
 rootMoist <- all_data$root_moisture
 totMoist <- all_data$total_moisture
 
+#And tie it all together into a nice data frame
 alldata_df <- cbind.data.frame(species, saltConc, fwShootRoot, dwShootRoot, 
                                shootMoist, rootMoist, totMoist)
 
@@ -148,12 +152,9 @@ plotMeans(fwShootRoot_noOutliers$fwShootRoot,
           fwShootRoot_noOutliers$saltConc,
           fwShootRoot_noOutliers$species,
           error.bars = "se",
-          xlab = ("Salt Concerntration (g/L)"),
+          xlab = ("Salt Concentration (g/L)"),
           ylab = ("fresh weight shoot to root ratio (%)"),
-          pch = 21,
-          col = ("#ff007F"),
           main=(""),
-          lty = 3,
           legend.pos = "bottomleft",
           legend.lab = "Species"
 )
@@ -238,12 +239,9 @@ plotMeans(dwShootRoot_noOutliers$dwShootRoot,
           dwShootRoot_noOutliers$saltConc,
           dwShootRoot_noOutliers$species,
           error.bars = "se",
-          xlab = ("Salt Concerntration (g/L)"),
+          xlab = ("Salt Concentration (g/L)"),
           ylab = ("Dry wieght Shoot Root ratio (%)"),
-          pch = 21,
-          col = ("#ff007F"),
           main=(""),
-          lty = 3,
           legend.pos = "bottomleft",
           legend.lab = "Species"
 )
@@ -324,12 +322,9 @@ plotMeans(shootMoist_noOutliers$shootMoist,
           shootMoist_noOutliers$saltConc,
           shootMoist_noOutliers$species,
           error.bars = "se",
-          xlab = ("Salt Concerntration (g/L)"),
+          xlab = ("Salt Concentration (g/L)"),
           ylab = ("shoot Moisture (%)"),
-          pch = 21,
-          col = ("#ff007F"),
           main=(""),
-          lty = 3,
           legend.pos = "bottomleft",
           legend.lab = "Species"
 )
@@ -408,12 +403,9 @@ plotMeans(rootMoist_noOutliers$rootMoist,
           rootMoist_noOutliers$saltConc,
           rootMoist_noOutliers$species,
           error.bars = "se",
-          xlab = ("Salt Concerntration (g/L)"),
+          xlab = ("Salt Concentration (g/L)"),
           ylab = ("dry weight shoot to root ratio (%)"),
-          pch = 21,
-          col = ("#ff007F"),
           main=(""),
-          lty = 3,
           legend.pos = "bottomleft",
           legend.lab = "Species"
 )
@@ -491,12 +483,9 @@ plotMeans(totMoist_noOutliers$totMoist,
           totMoist_noOutliers$saltConc,
           totMoist_noOutliers$species,
           error.bars = "se",
-          xlab = ("Salt Concerntration (g/L)"),
+          xlab = ("Salt Concentration (g/L)"),
           ylab = ("Total moisture"),
-          pch = 21,
-          col = ("#ff007F"),
           main=(""),
-          lty = 3,
           legend.pos = "bottomleft",
           legend.lab = "Species"
 )

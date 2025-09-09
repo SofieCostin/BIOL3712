@@ -37,15 +37,22 @@
 # 'sqrt' is the square root
 # There's others too, some of which we'll get to in these sessions.
 
-# Example:
+#Remember - you are reading all of this in RStudio, which is just an editor - it is not R itself! 
+
+#To send a line from the RStudio to R, you can click anywhere in the line and hit CTRL + ENTER. No need to highlight the line itself.
+
+# Example (run each line by clicking CTRL + ENTER):
 1+1
 2^2
 sqrt(4)
+
 # Notice the solution is presented in the Console panel below.
 
 # Workbook question 1a: --------
 # please write and run three lines of code to answer three simple maths 
-# problems (like the examples above)
+# problems (like the examples above). When you're done, paste the code (not the result!) into your workbook
+
+
 
 # The arrow '<-' is called the 'Assignment Operator' in R
 # It is used to assign information to an object.
@@ -90,17 +97,22 @@ cat("I would rather wear no socks than dirty socks")
 # tell me what your name is!
 
 # create an object for your name:
-myname <- "Sofie Costin" # enter your name here instead of my name
+myname <- "Sofie Costin" # replace "Sofie Costin" with your name here 
+
+#Now use the "cat" function print a sentence that prints what's in the "myname" object - hopefully your name :-).
 cat("************ My name is", myname, "************")
 
+#Do you want to know what exactly a function does? you can type ?cat to find out:
 
+?cat
+#this display a help file on the bottom right.
 
 ### Data Formats (see reference image) ###
 
 ## A vector ##
 
-# A vector: 1 or more numbers in a 1-dimensional row of all the same data type
-# Lets make a vector of numbers 1 through 18. We are going to call it 'vec' - short for vector.
+# A vector: One or more numbers in a one-dimensional row of all the same data type
+# Lets make a vector of numbers one through 18. We are going to call it 'vec' - short for vector.
 
 vec <- c(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18)
 # The 'c' stands for concatenate or combine. It creates a temporary list for
@@ -112,24 +124,23 @@ vec
 # maximum and minimum values by a colon ':'
 vec2 <- c(1:18)
 vec2
-# (Note: the difference in the objects in the environment. One is class integer,
-# the other is class numeric. This doesn't matter, as R automatically converts 
-# between numeric classes.)
+# (Note: the difference in the objects in the environment. One is class integer, the other is class numeric. This doesn't matter, as R automatically converts between numeric classes.)
 
 
 # Workbook question 1c: ----------------------------------------------------
-# create a vector using 16 numbers of your choice. you can call it anything you like
+# create a vector using 16 numbers of your choice. You can call it anything you like.
 
 
 
 
 ## A matrix ##
 
-# A matrix consists of rows and columns. A 2-dimensional array. 
+# A matrix consists of rows and columns. Technically it is a 2-dimensional array. 
 # Requires the same length of rows and same data type.
 # Let's make a matrix this time, using the same numbers, but divided into 3 rows.
-# This time we use the 'matrix' function
+# This time we use the 'matrix' function. Let's first find out what this does:
 ?matrix
+
 # We'll name this one 'mat'- short for matrix
 
 #Here, we distribute the vec vector (1:18) across three rows (i.e. 3 rows with 6 columns each = 18)
@@ -142,36 +153,38 @@ mat2
 
 
 # Workbook question 1d: ---------------------------------------------------
-# turn your vector into a matrix with four rows
+# turn your vector from Workbook question 1c into a matrix with four rows
 
 
 
 
 ## A dataframe ##
 
-# A dataframe is similar to a matrix, in that it consists of rows and columns. 
-# The key difference is, that a dataframe can include data of different types. 
+# A dataframe is similar to a matrix, in that it also consists of rows and columns. 
+# The key difference is that a dataframe can include data of different types. 
 # we can use the as.data.frame function to turn our 'mat' matrix into a dataframe
 mat_df <- as.data.frame(mat)
-# if we compare our mat matrix with our mat data frame, we can notice a few differences.
+# if we compare our mat matrix with our mat data frame, we can notice a few differences in how it is presented.
 mat
 mat_df
-# we can then add a column of characters (called "new") to our mat_df
+
+# we can then add a column of characters (called "new") to our mat_df. This is not possible with matrices, only with data frames.
 mat_df$new <- c('one', 'two', 'three')
 mat_df
+
 # and we can rename one of our column headers (here, we use column 1 by typing [1], 
 #but it could be column 2 if you typed [2])
 names(mat_df)[1] <- 'case'
 mat_df
 
-# check out our new dataframe:
+# check out our new dataframe. We will also use the "str" command to check our salinity data later on.
 str(mat_df) # shows us our column labels, our data types, and the first few data points.
 
 
 
 # Workbook question 1e:  --------------------------------------------------
-# turn your matrix into a dataframe. add a column called 'pie' of characters (words) that relate to pies.
-# (this is equivalent to the addition of the 'mat_df$new' column)
+# turn your matrix into a dataframe. Add a column called 'pie' containing characters (words) that relate to pies.
+# (this done the same way as the addition of the 'mat_df$new' column above)
 # rename another column to be called 'pizza'
 
 
@@ -185,7 +198,7 @@ rm(list = ls())
 ### Now lets look at some data!!! ###
 
 # R has many stored datasets
-# To view the list:
+# To view the list (this flicks open another tab):
 data()
 
 # You can view the details of each dataset.
@@ -204,7 +217,7 @@ head(iris)
 # The 'summary' function presents the main parameters of the data.
 summary(iris) 
 # prints number of individuals, variable means, sds, IQR, etc
-# NOTE: the data is essentially a matrix by coordinates. SO we can extract any
+# NOTE: the data is essentially a matrix by coordinates. So we can extract any
 # data via their coordinates, just like before!
 # for exammple, data[1,2] will give us the first value of the second column (sepal width)
 data[1,2]
@@ -226,9 +239,9 @@ sepalW <- data$Sepal.Width
 petalL <- data$Petal.Length
 petalW <- data$Petal.Width
 species <- data$Species
-# Note that species is qualitative
+# Note that species only has three qualitative states
 species
-# So it is registered as a Factor with 150 observations across three levels.
+# So it is registered as a Factor with 150 observations across three levels. This becomes important if you want to analyse a response variable by a factor such as salinity levels ;-)
 
 # if you save your workspace at the end of your session, it will save all of the 
 # information in your global environment, which is especially handy when your code 
@@ -269,3 +282,19 @@ library(help = "stats")
 # 1)	Search in the packages window (click install and type the package name)
 # 2)	CRAN: comprehensive R archive network. Go to https://cran.r-project.org/
 # 3)	GitHub: https://github.com/trending/r
+
+#And in case you want to play with the reason why we do homogeneity of variance testing, below is the code that simulates two groups with the same mean but different standard deviations
+
+#Simulate some data with a normal distribution but different means
+simul_data <- as.data.frame(cbind(c (rnorm(50,mean=10,sd=1),rnorm(50,mean=10,sd=5), rnorm(10000,mean=10, sd=5)), c(rep(1,50), rep(2,50), rep(3,10000))))
+
+par(mfrow=c(1,3))
+hist(simul_data$V1[simul_data$V2==1], main="n=50, std=1", col="hotpink", xlab="", cex.main=3)
+hist(simul_data$V1[simul_data$V2==2], main="n=50, std=5",col="hotpink", xlab="", cex.main=3)
+hist(simul_data$V1[simul_data$V2==3], main="n=10,000, std=5",col="hotpink", xlab="",, cex.main=3)
+
+par(mfrow=c(1,1))
+boxplot(simul_data$V1~simul_data$V2, col="hotpink", xlab="Groups - all from distributions with mean of 10", ylab="Measurements", names=c("n=50, std=1", "n=50, std=5", "n=10,000, std=5"))
+
+
+

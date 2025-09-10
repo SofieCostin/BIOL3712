@@ -1,495 +1,361 @@
 # ******************************************************************************
-
 ###                     Rex and Sof's Salinity Workshop                      ###
-
 # ******************************************************************************
 
 # ******************************************************************************
-
-# Salinity Data Analysis continued ----------------
-
+# Salinity Data Analysis (continued) ------------------------------------------
 # ******************************************************************************
 
-### PLEASE NOTE THAT USING THIS CODE WILL VOID YOUR CHANCE AT GETTING AN HD FOR 
-### THIS PART OF THE ASSIGNMENT
+### PLEASE NOTE: USING THIS CODE WILL VOID YOUR CHANCE AT AN HD FOR
+### THIS PART OF THE ASSIGNMENT.
 
-# first, we're going to clear the data from our global environment, so we have a 
-# fresh start
-
+# Start fresh ------------------------------------------------------------------
 rm(list = ls())
 
-# and load our libraries
-library(ggpubr)
+# Libraries --------------------------------------------------------------------
+# (Install first if needed, e.g., install.packages("dplyr"))
 library(dplyr)
-library(car)
-library(RcmdrMisc)
+library(car)          # for leveneTest()
 
-# Let's import our data
 
-all_data <- na.omit(data.frame(read.csv("Salinity_data.csv")))  
+# Data import & preparation -----------------------------------------------------
+# Read from working directory and drop rows with any NA values
+all_data <- na.omit(read.csv("Salinity_data.csv"))
 
-# read.csv will import the data from our working directory
-head(all_data) 
-# note that we now have all_data in our global environment, which is 108 observations 
-# of 20 variables
-
-# the name of our species column is a little weird, so lets sort that out:
-names(all_data)[1] <- 'species'
-
-# and we can check that everything looks as we expect it to:
+# Quick checks
+head(all_data)
 str(all_data)
 
+# Variables we will use
+saltconc    <- as.character(all_data$salt.conc) # treat as categorical later
+fwrootshoot <- all_data$fw.root.shoot.ratio
+dwrootshoot <- all_data$dw.root.shoot.ratio
+shootmoist  <- all_data$shoot.moisture
+rootmoist   <- all_data$root.moisture
+totmoist    <- all_data$total.moisture
 
-# Let's assign all of the variables we're going to use to their own object. 
-species <- all_data$species
-saltConc <- as.character(all_data$salt_conc) 
-fwShootRoot <- all_data$fw_shoot_root_ratio
-dwShootRoot <- all_data$dw_shoot_root_ratio
-shootMoist <- all_data$shoot_moisture
-rootMoist <- all_data$root_moisture
-totMoist <- all_data$total_moisture
-
-#And tie it all together into a nice data frame
-alldata_df <- cbind.data.frame(species, saltConc, fwShootRoot, dwShootRoot, 
-                               shootMoist, rootMoist, totMoist)
-
-# check all is as we expect:
+# Single tidy data frame for analysis/plotting
+alldata_df <- cbind.data.frame(saltconc, fwrootshoot, dwrootshoot,
+                               shootmoist, rootmoist, totmoist)
 str(alldata_df)
 
-# Fresh weight root to shoot ratio ----------------------------------
+# Order the salt concentration factor for sensible x-axis ordering
+desired_salt_order <- c("0", "1.5", "2.5", "5", "10", "15")
+alldata_df$saltconc <- factor(alldata_df$saltconc, levels = desired_salt_order)
+levels(alldata_df$saltconc)
+
+
+
+# Fresh weight root:shoot ratio - re-capped from previous code ------------------------------------------------
 
 ### Assumption 1: data are normally distributed
-shapiro.test(alldata_df$fwShootRoot)
+shapiro.test(alldata_df$fwrootshoot)
 
-hist(alldata_df$fwShootRoot, breaks = 100)
+hist(alldata_df$fwrootshoot, breaks = 100,
+     main = "Histogram: FW root:shoot",
+     xlab = "FW root:shoot ratio")
 
-# woah, something whacky is happening here. Let's open our data and have a look
-# what can you see is wrong? we need to remove some outliers
+# As per last code, something wacky is happening here. Let's open our data and have a look.
+# What can you see is wrong? We need to remove some outliers
+quartiles <- quantile(alldata_df$fwrootshoot, probs = c(.25, .75), na.rm = TRUE)
+iqr_val   <- IQR(alldata_df$fwrootshoot, na.rm = TRUE)
+Lower     <- quartiles[1] - 1.5 * iqr_val
+Upper     <- quartiles[2] + 1.5 * iqr_val
 
-# first, we work out what our first and third quartiles are for our data:
-quartiles <- quantile(alldata_df$fwShootRoot, probs=c(.25, .75), na.rm = FALSE) 
-# and determine the interquartile range (IQR)
-IQR <- IQR(alldata_df$fwShootRoot)
+fwrootshoot_nooutliers <- dplyr::filter(alldata_df,
+                                        fwrootshoot >= Lower & fwrootshoot <= Upper)
 
-# Then we find our lower and upper limits:
-Lower <- quartiles[1] - 1.5*IQR
-Upper <- quartiles[2] + 1.5*IQR 
+# Replicates per treatment after filtering
+table(fwrootshoot_nooutliers$saltconc)
 
-# and reassign any data above the lower threshold and below the upper threshold to a new dataframe, 
-# which we will use for the analysis.
-fwShootRoot_noOutliers <- filter(alldata_df, fwShootRoot > Lower & fwShootRoot < Upper )
+# re-test for normality-as per previous code, this is now a bit better
+shapiro.test(fwrootshoot_nooutliers$fwrootshoot)
 
-#There are still some clearly horrible data in here. Let's take them out. 
+hist(fwrootshoot_nooutliers$fwrootshoot,
+     main = "Histogram: FW root:shoot (no outliers)",
+     xlab = "FW root:shoot ratio")
 
-# After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
-shapiro.test(fwShootRoot_noOutliers$fwShootRoot)
+# and let's see how the boxplot has changed
+boxplot(fwrootshoot ~ saltconc, data = fwrootshoot_nooutliers,
+        xlab = "Salt concentration (g/L)",
+        ylab = "FW root:shoot ratio")
 
-# much better
-hist(fwShootRoot_noOutliers$fwShootRoot)
+# Assumption 2: homogeneity of variances
+leveneTest(fwrootshoot ~ saltconc, data = fwrootshoot_nooutliers)
 
-desired_salt_order <- c("1.5", "2.5", "5", "10", "15")
-fwShootRoot_noOutliers$saltConc <- factor(fwShootRoot_noOutliers$saltConc, levels = desired_salt_order)
-levels(fwShootRoot_noOutliers$saltConc)
+# One-way ANOVA
+fwrootshoot.aov <- aov(fwrootshoot ~ saltconc, data = fwrootshoot_nooutliers)
+summary(fwrootshoot.aov)
 
-boxplot(fwShootRoot ~ saltConc, data = fwShootRoot_noOutliers, 
-        xlab = "saltConc",
-        ylab = "fwShootRoot"
-)
-
-
-#This is still not great. Normally, we would go thorugh and remove the offending data in the dataset, but this will be too confusing. But again, some of the plants have been shooting atypically fast, so it's OK to take out any values that are very high, e.g. higher than 1.5:
-fwShootRoot_noOutliers <- filter(alldata_df, fwShootRoot < 1.6 )
-
-# Re-test for normality using our Shapiro-Wilk tests.
-shapiro.test(fwShootRoot_noOutliers$fwShootRoot)
-
-# much better
-hist(fwShootRoot_noOutliers$fwShootRoot)
-
-desired_salt_order <- c("1.5", "2.5", "5", "10", "15")
-fwShootRoot_noOutliers$saltConc <- factor(fwShootRoot_noOutliers$saltConc, levels = desired_salt_order)
-levels(fwShootRoot_noOutliers$saltConc)
-
-boxplot(fwShootRoot ~ saltConc, data = fwShootRoot_noOutliers, 
-        xlab = "saltConc",
-        ylab = "fwShootRoot"
-)
-
-
-table(fwShootRoot_noOutliers$species, fwShootRoot_noOutliers$saltConc)
-
-# as good as it gets. Let's proceed.
-
-### Assumption 2: variances are homogeneous
-
-library(car) # access the car package
-
-leveneTest(fwShootRoot ~ species*saltConc, data = fwShootRoot_noOutliers)
-
-### two-way ANOVA
-
-fwShootRoot.aov <- aov(fwShootRoot ~ saltConc, data = fwShootRoot_noOutliers)
-summary(fwShootRoot.aov)
-#have a good look at this. What is this telling us - what follow-on tests are appropriate, which are not?
-
-# we can generate some summary statistics for our response data, depending on our two factors:
-require("dplyr")
-group_by(fwShootRoot_noOutliers, species, saltConc) %>%
-  summarise(count = n(),mean = mean(fwShootRoot, na.rm = TRUE),
-            sd = sd(fwShootRoot, na.rm = TRUE))
-
-# post-hoc test
-
-TukeyHSD(fwShootRoot.aov, which = "saltConc")
-# when interpreting the output, diff: difference between means of the two groups, 
-# lwr & upr: the lower and the upper end point of the confidence interval at 95%, 
-# p adj: p-value after adjustment for the multiple comparisons.
-
+# Group summaries
+fwrootshoot_nooutliers %>%
+  group_by(saltconc) %>%
+  summarise(count = n(),
+            mean  = mean(fwrootshoot, na.rm = TRUE),
+            sd    = sd(fwrootshoot,   na.rm = TRUE),
+            .groups = "drop")
 
 ### let's graph it!
-
-plotMeans(fwShootRoot_noOutliers$fwShootRoot,
-          fwShootRoot_noOutliers$saltConc,
-          fwShootRoot_noOutliers$species,
+plotMeans(fwrootshoot_nooutliers$fwrootshoot,
+          fwrootshoot_nooutliers$saltconc,
           error.bars = "se",
-          xlab = ("Salt Concentration (g/L)"),
-          ylab = ("fresh weight shoot to root ratio (%)"),
-          main=(""),
-          legend.pos = "bottomleft",
-          legend.lab = "Species"
-)
-
-# once we're happy with our plot, we click "export" and save it in our working folder. 
-
-
-# Dry weight root to shoot ratio ----------------------------------
-
-### Assumption 1: data are normally distributed
-shapiro.test(alldata_df$dwShootRoot)
-
-hist(alldata_df$dwShootRoot)
-
-desired_salt_order <- c("1.5", "2.5", "5", "10", "15")
-alldata_df$saltConc <- factor(alldata_df$saltConc, levels = desired_salt_order)
-levels(alldata_df$saltConc)
-
-boxplot(dwShootRoot ~ saltConc, data = alldata_df, 
-        xlab = "saltConc",
-        ylab = "dwShootRoot"
-)
-
-# remove outliers
-
-# first, we work out what our first and third quartiles are for our data:
-quartiles <- quantile(alldata_df$dwShootRoot, probs=c(.25, .75), na.rm = FALSE) 
-# and determine the interquartile range (IQR)
-IQR <- IQR(alldata_df$dwShootRoot)
-
-# Then we find our lower and upper limits:
-Lower <- quartiles[1] - 1.5*IQR
-Upper <- quartiles[2] + 1.5*IQR 
-
-# and reassign any data above the lower threshold and below the upper threshold to a new dataframe, 
-# which we will use for the analysis.
-dwShootRoot_noOutliers <- filter(alldata_df, dwShootRoot > Lower & dwShootRoot < Upper )
-
-# After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
-shapiro.test(dwShootRoot_noOutliers$dwShootRoot)
-
-# much better
-hist(dwShootRoot_noOutliers$dwShootRoot)
-
-
-boxplot(dwShootRoot ~ saltConc, data = dwShootRoot_noOutliers, 
-        xlab = "saltConc",
-        ylab = "dwShootRoot"
-)
-
-#again, we have some interesting differences possibly due to anomalous plants, but we will assume that the ANOVA is robust to thes few outliers.
-
-table(dwShootRoot_noOutliers$species, dwShootRoot_noOutliers$saltConc)
-
-
-### Assumption 2: variances are homogeneous
-
-leveneTest(dwShootRoot ~ species*saltConc, data = dwShootRoot_noOutliers)
-
-### two-way ANOVA
-
-dwShootRoot.aov <- aov(dwShootRoot ~ saltConc, data = dwShootRoot_noOutliers)
-summary(dwShootRoot.aov)
-
-# we can generate some summary statistics for our response data, depending on our two factors:
-
-group_by(dwShootRoot_noOutliers, species, saltConc) %>%
-  summarise(count = n(),mean = mean(dwShootRoot, na.rm = TRUE),
-            sd = sd(dwShootRoot, na.rm = TRUE))
-
-# post-hoc test
-
-TukeyHSD(dwShootRoot.aov, which = "saltConc")
-# when interpreting the output, diff: difference between means of the two groups, 
-# lwr & upr: the lower and the upper end point of the confidence interval at 95%, 
-# p adj: p-value after adjustment for the multiple comparisons.
-
-
-### let's graph it!
-
-plotMeans(dwShootRoot_noOutliers$dwShootRoot,
-          dwShootRoot_noOutliers$saltConc,
-          dwShootRoot_noOutliers$species,
-          error.bars = "se",
-          xlab = ("Salt Concentration (g/L)"),
-          ylab = ("Dry wieght Shoot Root ratio (%)"),
-          main=(""),
-          legend.pos = "bottomleft",
-          legend.lab = "Species"
-)
+          xlab = "Salt concentration (g/L)",
+          ylab = "FW root:shoot ratio",
+          main = "")
 
 # once we're happy with our plot, we click "export" and save it in our working folder.
 
 
-# Shoot Moisture ----------------------------------
+# Dry weight root:shoot ratio --------------------------------------------------
 
 ### Assumption 1: data are normally distributed
-shapiro.test(alldata_df$shootMoist)
+shapiro.test(alldata_df$dwrootshoot)
 
-hist(alldata_df$shootMoist)
+hist(alldata_df$dwrootshoot,
+     main = "Histogram: DW root:shoot",
+     xlab = "DW root:shoot ratio")
 
-boxplot(shootMoist ~ saltConc, data = alldata_df, 
-        xlab = "saltConc",
-        ylab = "shootMoist"
-)
+boxplot(dwrootshoot ~ saltconc, data = alldata_df,
+        xlab = "Salt concentration (g/L)",
+        ylab = "DW root:shoot ratio")
 
 # remove outliers
+quartiles <- quantile(alldata_df$dwrootshoot, probs = c(.25, .75), na.rm = TRUE)
+iqr_val   <- IQR(alldata_df$dwrootshoot, na.rm = TRUE)
+Lower     <- quartiles[1] - 1.5 * iqr_val
+Upper     <- quartiles[2] + 1.5 * iqr_val
 
-# first, we work out what our first and third quartiles are for our data:
-quartiles <- quantile(alldata_df$shootMoist, probs=c(.25, .75), na.rm = FALSE) 
-# and determine the interquartile range (IQR)
-IQR <- IQR(alldata_df$shootMoist)
+dwrootshoot_nooutliers <- dplyr::filter(alldata_df,
+                                        dwrootshoot >= Lower & dwrootshoot <= Upper)
 
-# Then we find our lower and upper limits:
-Lower <- quartiles[1] - 1.5*IQR
-Upper <- quartiles[2] + 1.5*IQR 
+# re-test for normality
+shapiro.test(dwrootshoot_nooutliers$dwrootshoot)
 
-# and reassign any data above the lower threshold and below the upper threshold to a new dataframe, 
-# which we will use for the analysis.
-shootMoist_noOutliers <- filter(alldata_df, shootMoist > Lower & shootMoist < Upper )
+hist(dwrootshoot_nooutliers$dwrootshoot,
+     main = "Histogram: DW root:shoot (no outliers)",
+     xlab = "DW root:shoot ratio")
 
-# After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
-shapiro.test(shootMoist_noOutliers$shootMoist)
+boxplot(dwrootshoot ~ saltconc, data = dwrootshoot_nooutliers,
+        xlab = "Salt concentration (g/L)",
+        ylab = "DW root:shoot ratio")
 
-# much better
-hist(shootMoist_noOutliers$shootMoist)
+table(dwrootshoot_nooutliers$saltconc)
 
-boxplot(shootMoist ~ saltConc, data = shootMoist_noOutliers, 
-        xlab = "saltConc",
-        ylab = "shootMoist"
-)
+# Assumption 2: homogeneity of variances
+leveneTest(dwrootshoot ~ saltconc, data = dwrootshoot_nooutliers)
 
-table(shootMoist_noOutliers$species, shootMoist_noOutliers$saltConc)
+# One-way ANOVA
+dwrootshoot.aov <- aov(dwrootshoot ~ saltconc, data = dwrootshoot_nooutliers)
+summary(dwrootshoot.aov)
 
+# Summaries
+dwrootshoot_nooutliers %>%
+  group_by(saltconc) %>%
+  summarise(count = n(),
+            mean  = mean(dwrootshoot, na.rm = TRUE),
+            sd    = sd(dwrootshoot,   na.rm = TRUE),
+            .groups = "drop")
 
-### Assumption 2: variances are homogeneous
+# Post-hoc (Tukey)
+dwrootshoot.tukey <- TukeyHSD(dwrootshoot.aov, which = "saltconc")
+dwrootshoot.tukey
 
-library(car) # access the car package
-
-#What does the result mean? We will continue here and assume the ANOVA is robust, but you will be able to see why this test is significant when you look at the boxplot above.
-leveneTest(shootMoist ~ species*saltConc, data = shootMoist_noOutliers)
-
-
-### two-way ANOVA
-
-shootMoist.aov <- aov(shootMoist ~ saltConc, data = shootMoist_noOutliers)
-summary(shootMoist.aov)
-
-# summary statistics
-group_by(shootMoist_noOutliers, species, saltConc) %>%
-  summarise(count = n(),mean = mean(shootMoist, na.rm = TRUE),
-            sd = sd(shootMoist, na.rm = TRUE))
-
-# post-hoc test
-
-TukeyHSD(shootMoist.aov, which = "saltConc")
-# when interpreting the output, diff: difference between means of the two groups, 
-# lwr & upr: the lower and the upper end point of the confidence interval at 95%, 
-# p adj: p-value after adjustment for the multiple comparisons.
-
-
-### let's graph it!
-
-plotMeans(shootMoist_noOutliers$shootMoist,
-          shootMoist_noOutliers$saltConc,
-          shootMoist_noOutliers$species,
+### let's graph it! and letters
+plotMeans(dwrootshoot_nooutliers$dwrootshoot,
+          dwrootshoot_nooutliers$saltconc,
           error.bars = "se",
-          xlab = ("Salt Concentration (g/L)"),
-          ylab = ("shoot Moisture (%)"),
-          main=(""),
-          legend.pos = "bottomleft",
-          legend.lab = "Species"
-)
+          xlab = "Salt concentration (g/L)",
+          ylab = "DW root:shoot ratio",
+          main = "")
 
-# once we're happy with our plot, we click "export" and save it in our working folder.
-
-# Root Moisture ----------------------------------
+# Shoot moisture ---------------------------------------------------------------
 
 ### Assumption 1: data are normally distributed
-shapiro.test(alldata_df$rootMoist)
+shapiro.test(alldata_df$shootmoist)
 
-hist(alldata_df$rootMoist)
+hist(alldata_df$shootmoist,
+     main = "Histogram: Shoot moisture",
+     xlab = "Shoot moisture (%)")
 
-boxplot(rootMoist ~ saltConc, data = alldata_df, 
-        xlab = "saltConc",
-        ylab = "rootMoist"
-)
+boxplot(shootmoist ~ saltconc, data = alldata_df,
+        xlab = "Salt concentration (g/L)",
+        ylab = "Shoot moisture (%)")
 
 # remove outliers
+quartiles <- quantile(alldata_df$shootmoist, probs = c(.25, .75), na.rm = TRUE)
+iqr_val   <- IQR(alldata_df$shootmoist, na.rm = TRUE)
+Lower     <- quartiles[1] - 1.5 * iqr_val
+Upper     <- quartiles[2] + 1.5 * iqr_val
 
-# first, we work out what our first and third quartiles are for our data:
-quartiles <- quantile(alldata_df$rootMoist, probs=c(.25, .75), na.rm = FALSE) 
-# and determine the interquartile range (IQR)
-IQR <- IQR(alldata_df$rootMoist)
+shootmoist_nooutliers <- dplyr::filter(alldata_df,
+                                       shootmoist >= Lower & shootmoist <= Upper)
 
-# Then we find our lower and upper limits:
-Lower <- quartiles[1] - 1.5*IQR
-Upper <- quartiles[2] + 1.5*IQR 
+# re-test for normality
+shapiro.test(shootmoist_nooutliers$shootmoist)
 
-# and reassign any data above the lower threshold and below the upper threshold to a new dataframe, 
-# which we will use for the analysis.
-rootMoist_noOutliers <- filter(alldata_df, rootMoist > Lower & rootMoist < Upper )
+hist(shootmoist_nooutliers$shootmoist,
+     main = "Histogram: Shoot moisture (no outliers)",
+     xlab = "Shoot moisture (%)")
 
-# After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
-shapiro.test(rootMoist_noOutliers$rootMoist)
+boxplot(shootmoist ~ saltconc, data = shootmoist_nooutliers,
+        xlab = "Salt concentration (g/L)",
+        ylab = "Shoot moisture (%)")
 
-# much better
-hist(rootMoist_noOutliers$rootMoist)
+table(shootmoist_nooutliers$saltconc)
 
-boxplot(rootMoist ~ saltConc, data = rootMoist_noOutliers, 
-        xlab = "saltConc",
-        ylab = "rootMoist"
-)
+# Assumption 2: homogeneity of variances
+leveneTest(shootmoist ~ saltconc, data = shootmoist_nooutliers)
 
-table(rootMoist_noOutliers$species, rootMoist_noOutliers$saltConc)
+# One-way ANOVA
+shootmoist.aov <- aov(shootmoist ~ saltconc, data = shootmoist_nooutliers)
+summary(shootmoist.aov)
 
+# Summaries
+shootmoist_nooutliers %>%
+  group_by(saltconc) %>%
+  summarise(count = n(),
+            mean  = mean(shootmoist, na.rm = TRUE),
+            sd    = sd(shootmoist,   na.rm = TRUE),
+            .groups = "drop")
 
-### Assumption 2: variances are homogeneous
+# Post-hoc (Tukey)
+shootmoist.tukey <- TukeyHSD(shootmoist.aov, which = "saltconc")
+shootmoist.tukey
 
-leveneTest(rootMoist ~ species * saltConc, data = rootMoist_noOutliers)
-
-#Both Shapiro or Levene test are significant - so again, this needs flagging in your report. Can you think of why the variance in the lower concentrations is so much higher than in the upper ones?
-
-### two-way ANOVA
-
-rootMoist.aov <- aov(rootMoist ~ saltConc, data = rootMoist_noOutliers)
-summary(rootMoist.aov)
-
-# we can generate some summary statistics for our response data, depending on our two factors:
-
-group_by(rootMoist_noOutliers, species, saltConc) %>%
-  summarise(count = n(),mean = mean(rootMoist, na.rm = TRUE),
-            sd = sd(rootMoist, na.rm = TRUE))
-
-# post-hoc test
-
-TukeyHSD(rootMoist.aov, which = "saltConc")
-# when interpreting the output, diff: difference between means of the two groups, 
-# lwr & upr: the lower and the upper end point of the confidence interval at 95%, 
-# p adj: p-value after adjustment for the multiple comparisons.
-
-
-### let's graph it!
-
-plotMeans(rootMoist_noOutliers$rootMoist,
-          rootMoist_noOutliers$saltConc,
-          rootMoist_noOutliers$species,
+### let's graph it! and letters
+plotMeans(shootmoist_nooutliers$shootmoist,
+          shootmoist_nooutliers$saltconc,
           error.bars = "se",
-          xlab = ("Salt Concentration (g/L)"),
-          ylab = ("dry weight shoot to root ratio (%)"),
-          main=(""),
-          legend.pos = "bottomleft",
-          legend.lab = "Species"
-)
+          xlab = "Salt concentration (g/L)",
+          ylab = "Shoot moisture (%)",
+          main = "")
 
-# once we're happy with our plot, we click "export" and save it in our working folder.
-
-# Total Moisture ----------------------------------
+# Root moisture ----------------------------------------------------------------
 
 ### Assumption 1: data are normally distributed
-shapiro.test(alldata_df$totMoist)
+shapiro.test(alldata_df$rootmoist)
 
-hist(alldata_df$totMoist)
+hist(alldata_df$rootmoist,
+     main = "Histogram: Root moisture",
+     xlab = "Root moisture (%)")
 
-boxplot(totMoist ~ saltConc, data = alldata_df, 
-        xlab = "saltConc",
-        ylab = "totMoist"
-)
+boxplot(rootmoist ~ saltconc, data = alldata_df,
+        xlab = "Salt concentration (g/L)",
+        ylab = "Root moisture (%)")
 
 # remove outliers
+quartiles <- quantile(alldata_df$rootmoist, probs = c(.25, .75), na.rm = TRUE)
+iqr_val   <- IQR(alldata_df$rootmoist, na.rm = TRUE)
+Lower     <- quartiles[1] - 1.5 * iqr_val
+Upper     <- quartiles[2] + 1.5 * iqr_val
 
-# first, we work out what our first and third quartiles are for our data:
-quartiles <- quantile(alldata_df$totMoist, probs=c(.25, .75), na.rm = FALSE) 
-# and determine the interquartile range (IQR)
-IQR <- IQR(alldata_df$totMoist)
+rootmoist_nooutliers <- dplyr::filter(alldata_df,
+                                      rootmoist >= Lower & rootmoist <= Upper)
 
-# Then we find our lower and upper limits:
-Lower <- quartiles[1] - 1.5*IQR
-Upper <- quartiles[2] + 1.5*IQR 
+# re-test for normality
+shapiro.test(rootmoist_nooutliers$rootmoist)
 
-# and reassign any data above the lower threshold and below the upper threshold to a new dataframe, 
-# which we will use for the analysis.
-totMoist_noOutliers <- filter(alldata_df, totMoist > Lower & totMoist < Upper )
+hist(rootmoist_nooutliers$rootmoist,
+     main = "Histogram: Root moisture (no outliers)",
+     xlab = "Root moisture (%)")
 
-# After relevant outliers are removed, we can then re-test for normality using our Shapiro-Wilk tests.
-shapiro.test(totMoist_noOutliers$totMoist)
+boxplot(rootmoist ~ saltconc, data = rootmoist_nooutliers,
+        xlab = "Salt concentration (g/L)",
+        ylab = "Root moisture (%)")
 
-# much better
-hist(totMoist_noOutliers$totMoist)
+table(rootmoist_nooutliers$saltconc)
 
-boxplot(totMoist ~ saltConc, data = totMoist_noOutliers, 
-        xlab = "saltConc",
-        ylab = "totMoist"
-)
+# Assumption 2: homogeneity of variances
+leveneTest(rootmoist ~ saltconc, data = rootmoist_nooutliers)
 
-table(totMoist_noOutliers$species, totMoist_noOutliers$saltConc)
+# If either Shapiro–Wilk or Levene’s test is significant, flag this in your report
+# and discuss potential reasons (e.g., greater variability at low salt levels).
 
+# One-way ANOVA
+rootmoist.aov <- aov(rootmoist ~ saltconc, data = rootmoist_nooutliers)
+summary(rootmoist.aov)
 
-### Assumption 2: variances are homogeneous
+# Summaries
+rootmoist_nooutliers %>%
+  group_by(saltconc) %>%
+  summarise(count = n(),
+            mean  = mean(rootmoist, na.rm = TRUE),
+            sd    = sd(rootmoist,   na.rm = TRUE),
+            .groups = "drop")
 
-leveneTest(totMoist ~ species*saltConc, data = totMoist_noOutliers)
+# Post-hoc (Tukey)
+rootmoist.tukey <- TukeyHSD(rootmoist.aov, which = "saltconc")
+rootmoist.tukey
 
-
-### two-way ANOVA
-
-totMoist.aov <- aov(totMoist ~ saltConc, data = totMoist_noOutliers)
-summary(totMoist.aov)
-
-# we can generate some summary statistics for our response data, depending on our two factors:
-require("dplyr")
-group_by(totMoist_noOutliers, species, saltConc) %>%
-  summarise(count = n(),mean = mean(totMoist, na.rm = TRUE),
-            sd = sd(totMoist, na.rm = TRUE))
-
-# post-hoc test
-
-TukeyHSD(totMoist.aov, which = "saltConc")
-# when interpreting the output, diff: difference between means of the two groups, 
-# lwr & upr: the lower and the upper end point of the confidence interval at 95%, 
-# p adj: p-value after adjustment for the multiple comparisons.
-
-
-### let's graph it!
-
-plotMeans(totMoist_noOutliers$totMoist,
-          totMoist_noOutliers$saltConc,
-          totMoist_noOutliers$species,
+### let's graph it! and letters
+plotMeans(rootmoist_nooutliers$rootmoist,
+          rootmoist_nooutliers$saltconc,
           error.bars = "se",
-          xlab = ("Salt Concentration (g/L)"),
-          ylab = ("Total moisture"),
-          main=(""),
-          legend.pos = "bottomleft",
-          legend.lab = "Species"
-)
+          xlab = "Salt concentration (g/L)",
+          ylab = "Root moisture (%)",
+          main = "")
 
-# once we're happy with our plot, we click "export" and save it in our working folder.
 
-### well done!
+# Total moisture ----------------------------------------------------------------
+
+### Assumption 1: data are normally distributed
+shapiro.test(alldata_df$totmoist)
+
+hist(alldata_df$totmoist,
+     main = "Histogram: Total moisture",
+     xlab = "Total moisture (%)")
+
+boxplot(totmoist ~ saltconc, data = alldata_df,
+        xlab = "Salt concentration (g/L)",
+        ylab = "Total moisture (%)")
+
+# remove outliers
+quartiles <- quantile(alldata_df$totmoist, probs = c(.25, .75), na.rm = TRUE)
+iqr_val   <- IQR(alldata_df$totmoist, na.rm = TRUE)
+Lower     <- quartiles[1] - 1.5 * iqr_val
+Upper     <- quartiles[2] + 1.5 * iqr_val
+
+totmoist_nooutliers <- dplyr::filter(alldata_df,
+                                     totmoist >= Lower & totmoist <= Upper)
+
+# re-test for normality
+shapiro.test(totmoist_nooutliers$totmoist)
+
+hist(totmoist_nooutliers$totmoist,
+     main = "Histogram: Total moisture (no outliers)",
+     xlab = "Total moisture (%)")
+
+boxplot(totmoist ~ saltconc, data = totmoist_nooutliers,
+        xlab = "Salt concentration (g/L)",
+        ylab = "Total moisture (%)")
+
+table(totmoist_nooutliers$saltconc)
+
+# Assumption 2: homogeneity of variances
+leveneTest(totmoist ~ saltconc, data = totmoist_nooutliers)
+
+# One-way ANOVA
+totmoist.aov <- aov(totmoist ~ saltconc, data = totmoist_nooutliers)
+summary(totmoist.aov)
+
+# Summaries
+totmoist_nooutliers %>%
+  group_by(saltconc) %>%
+  summarise(count = n(),
+            mean  = mean(totmoist, na.rm = TRUE),
+            sd    = sd(totmoist,   na.rm = TRUE),
+            .groups = "drop")
+
+# Post-hoc (Tukey)
+totmoist.tukey <- TukeyHSD(totmoist.aov, which = "saltconc")
+totmoist.tukey
+
+### let's graph it! and letters
+plotMeans(totmoist_nooutliers$totmoist,
+          totmoist_nooutliers$saltconc,
+          error.bars = "se",
+          xlab = "Salt concentration (g/L)",
+          ylab = "Total moisture (%)",
+          main = "")
+
+# Well done!

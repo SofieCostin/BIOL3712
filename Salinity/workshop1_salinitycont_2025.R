@@ -16,7 +16,7 @@ rm(list = ls())
 # (Install first if needed, e.g., install.packages("dplyr"))
 library(dplyr)
 library(car)          # for leveneTest()
-
+library(RcmdrMisc)
 
 # Data import & preparation -----------------------------------------------------
 # Read from working directory and drop rows with any NA values
@@ -94,6 +94,8 @@ fwrootshoot_nooutliers %>%
             mean  = mean(fwrootshoot, na.rm = TRUE),
             sd    = sd(fwrootshoot,   na.rm = TRUE),
             .groups = "drop")
+
+#Why is there no Tukey test here??
 
 ### let's graph it!
 plotMeans(fwrootshoot_nooutliers$fwrootshoot,

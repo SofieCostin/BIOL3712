@@ -6,6 +6,10 @@
 # Salinity Data Analysis -------------------------------------------------------
 # ******************************************************************************
 
+## Select 'Code' in the ribbon up top
+## and then turn on *soft wrap long lines*
+## This will make it much easier to read everything!
+
 # First, we're going to clear the data from the global environment so we have a fresh start.
 
 #If you run the below again, it will delete everything though! So if you plan to re-run things from the start, this line needs to be de-activated by putting a # next to it.
@@ -29,10 +33,10 @@ getwd()
 
 # Your data should be saved in your working directory folder. You can then easily access them.
 
-# read.csv() imports the data from the working directory; na.omit() removes rows
+# read.csv() imports the data from the working directory
 
 # with missing values (helps avoid errors later in tests/plots).
-all_data <- na.omit(read.csv("Salinity_data.csv"))
+all_data <- read.csv("Salinity_data_2026.csv")
 
 # Quick look at the data
 head(all_data)
@@ -197,15 +201,46 @@ boxplot(rootln ~ saltconc, data = alldata_df,
         xlab = "Salt concentration (g/L)",
         ylab = "Root length (cm)")
 
+## Looks like something is going on with 2.5 g/l - lets remove the outliers
+
+# Define outliers as points outside 1.5 × IQR.
+# If there are extreme outliers, we will remove them. Be sure to justify any
+# removals in your methods section.
+quartiles <- quantile(alldata_df$rootln, probs = c(.25, .75), na.rm = TRUE)
+iqr_val   <- IQR(alldata_df$rootln, na.rm = TRUE)
+Lower     <- quartiles[1] - 1.5 * iqr_val
+Upper     <- quartiles[2] + 1.5 * iqr_val
+
+# Keep values within the limits in a new data frame for analysis.
+rootln_nooutliers <- dplyr::filter(alldata_df,
+                                   rootln >= Lower & rootln <= Upper)
+
+# Check replicate counts after filtering. Which treatments had outliers removed, which didn't?
+table(rootln_nooutliers$saltconc)
+
+# Re‑test normality after removal.
+shapiro.test(rootln_nooutliers$rootln)
+
+#But the histogram suggests that we are now looking at one continuous distribution, which should be fine for ANOVA testing.
+hist(rootln_nooutliers$rootln,
+     main = "Histogram: Root length (no outliers)",
+     xlab = "Root length (cm)")
+
+boxplot(rootln ~ saltconc, data = rootln_nooutliers,
+        xlab = "Salt concentration (g/L)",
+        ylab = "Root length (cm)")
+
+## Still some outliers, but we can move on OR you can removed more outliers if you choose - Remeber you have to provide a justification for why!
+
 # Assumption 2: homogeneity of variances
-leveneTest(rootln ~ saltconc, data = alldata_df)
+leveneTest(rootln ~ saltconc, data = rootln_nooutliers)
 
 # One‑way ANOVA
-rootln.aov <- aov(rootln ~ saltconc, data = alldata_df)
+rootln.aov <- aov(rootln ~ saltconc, data = rootln_nooutliers)
 summary(rootln.aov)
 
 # Group summaries
-alldata_df %>%
+rootln_nooutliers %>%
   group_by(saltconc) %>%
   summarise(count = n(),
             mean  = mean(rootln, na.rm = TRUE),
@@ -217,7 +252,7 @@ rootln.tukey <- TukeyHSD(rootln.aov, which = "saltconc")
 rootln.tukey
 
 # Plot mean ± SE and add letters
-plotMeans(alldata_df$rootln, alldata_df$saltconc,
+plotMeans(rootln_nooutliers$rootln, rootln_nooutliers$saltconc,
           error.bars = "se",
           xlab = "Salt concentration (g/L)",
           ylab = "Root length (cm)",
@@ -247,15 +282,35 @@ boxplot(leafno ~ saltconc, data = alldata_df,
         xlab = "Salt concentration (g/L)",
         ylab = "Number of leaves")
 
+
+# Define outliers as points outside 1.5 × IQR.
+# If there are extreme outliers, we will remove them. Be sure to justify any
+# removals in your methods section.
+quartiles <- quantile(alldata_df$leafno, probs = c(.25, .75), na.rm = TRUE)
+iqr_val   <- IQR(alldata_df$leafno, na.rm = TRUE)
+Lower     <- quartiles[1] - 1.5 * iqr_val
+Upper     <- quartiles[2] + 1.5 * iqr_val
+
+# Keep values within the limits in a new data frame for analysis.
+leafno_nooutliers <- dplyr::filter(alldata_df,
+                                        leafno >= Lower & leafno <= Upper)
+
+# Check replicate counts after filtering. Which treatments had outliers removed, which didn't?
+table(leafno_nooutliers$saltconc)
+
+# Re‑test normality after removal. This is less highly significant but still not amazing. Because ANOVA is relatively robust to non‑normality, we will continue — just note that the normality assumption was violated and how you addressed it.
+shapiro.test(leafno_nooutliers$fwrootshoot)
+
+
 # Assumption 2: homogeneity of variances
-leveneTest(leafno ~ saltconc, data = alldata_df)
+leveneTest(leafno ~ saltconc, data = leafno_nooutliers)
 
 # One‑way ANOVA
-leafno.aov <- aov(leafno ~ saltconc, data = alldata_df)
+leafno.aov <- aov(leafno ~ saltconc, data = leafno_nooutliers)
 summary(leafno.aov)
 
 # Group summaries
-alldata_df %>%
+leafno_nooutliers %>%
   group_by(saltconc) %>%
   summarise(count = n(),
             mean  = mean(leafno, na.rm = TRUE),
@@ -267,78 +322,13 @@ leafno.tukey <- TukeyHSD(leafno.aov, which = "saltconc")
 leafno.tukey
 
 # Plot mean ± SE and add letters
-plotMeans(alldata_df$leafno, alldata_df$saltconc,
+plotMeans(leafno_nooutliers$leafno, leafno_nooutliers$saltconc,
           error.bars = "se",
           xlab = "Salt concentration (g/L)",
           ylab = "Number of leaves",
           main = "")
 # Don’t forget to export your plot.
 
-
-
-# Fresh Weight root:shoot ratio - the case with outliers ------------------------------------------------------------
-
-# In the previous examples we didn't need to remove outliers, but you might need
-# to for some variables. A good example is the FW root:shoot ratio, which we'll do next. 
-
-# Test normality - this is highly significant!
-shapiro.test(alldata_df$fwrootshoot)
-
-#The distribution to the left looks OK, but there are some real outlying values.
-hist(alldata_df$fwrootshoot,
-     main = "Histogram: FW root:shoot (no outliers)",
-     xlab = "FW root:shoot ratio")
-
-
-# Another visual check to see where the outliers are in the groups
-boxplot(alldata_df$fwrootshoot ~ saltconc, data = alldata_df,
-        xlab = "Salt concentration (g/L)",
-        ylab = "FW root:shoot ratio")
-
-# It looks like something is happening in the 15 g/L treatment, where the roots are ~5.5* longer than the shoots. #Maybe someone didn't put the decimals right? Regardless, this is probably a situation where a mistake has occurred and we have to remove some of the extreme outliers.
-
-# Check replicates per treatment - remember the full number of replicates
-table(alldata_df$saltconc)
-
-# Define outliers as points outside 1.5 × IQR.
-# If there are extreme outliers, we will remove them. Be sure to justify any
-# removals in your methods section.
-quartiles <- quantile(alldata_df$fwrootshoot, probs = c(.25, .75), na.rm = TRUE)
-iqr_val   <- IQR(alldata_df$fwrootshoot, na.rm = TRUE)
-Lower     <- quartiles[1] - 1.5 * iqr_val
-Upper     <- quartiles[2] + 1.5 * iqr_val
-
-# Keep values within the limits in a new data frame for analysis.
-fwrootshoot_nooutliers <- dplyr::filter(alldata_df,
-                                        fwrootshoot >= Lower & fwrootshoot <= Upper)
-
-# Check replicate counts after filtering. Which treatments had outliers removed, which didn't?
-table(fwrootshoot_nooutliers$saltconc)
-
-# Re‑test normality after removal. This is less highly significant but still not amazing
-shapiro.test(fwrootshoot_nooutliers$fwrootshoot)
-
-#But the histogram suggests taht we are now looking at one continuous distribution, which should be fine for ANOVA testing.
-hist(fwrootshoot_nooutliers$fwrootshoot,
-     main = "Histogram: FW root:shoot (no outliers)",
-     xlab = "FW root:shoot ratio")
-
-fwrootshoot_nooutliers$saltconc <- factor(fwrootshoot_nooutliers$saltconc,
-                                          levels = desired_salt_order)
-levels(fwrootshoot_nooutliers$saltconc)
-
-#The boxplot comparisons also look like they are not too affected by the outliers
-boxplot(fwrootshoot ~ saltconc, data = fwrootshoot_nooutliers,
-        xlab = "Salt concentration (g/L)",
-        ylab = "FW root:shoot ratio")
-
-# NB: Don’t remove outliers just because they’re inconvenient — you need a sound
-# biological reason. Be transparent and justify any removals; otherwise, you’re
-# simply massaging the data.
-
-# Our histogram now suggests a more coherent distribution. Because ANOVA is
-# relatively robust to non‑normality, we will continue — just note that the
-# normality assumption was violated and how you addressed it.
 
 ##############Go forth and conquer the stats!!########################
 

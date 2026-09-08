@@ -1,5 +1,5 @@
 # ******************************************************************************
-###                     Rex and Sof's Salinity Workshop                      ###
+###                     Rex, Maddi and Sof's Salinity Workshop                      ###
 # ******************************************************************************
 
 # ******************************************************************************
@@ -19,8 +19,8 @@ library(car)          # for leveneTest()
 library(RcmdrMisc)
 
 # Data import & preparation -----------------------------------------------------
-# Read from working directory and drop rows with any NA values
-all_data <- na.omit(read.csv("Salinity_data.csv"))
+# Read from working directory
+all_data <- read.csv("Salinity_data_2026.csv")
 
 # Quick checks
 head(all_data)
@@ -95,7 +95,9 @@ fwrootshoot_nooutliers %>%
             sd    = sd(fwrootshoot,   na.rm = TRUE),
             .groups = "drop")
 
-#Why is there no Tukey test here??
+
+fwrootshoot.tukey <- TukeyHSD(fwrootshoot.aov, which = "saltconc")
+fwrootshoot.tukey
 
 ### let's graph it!
 plotMeans(fwrootshoot_nooutliers$fwrootshoot,

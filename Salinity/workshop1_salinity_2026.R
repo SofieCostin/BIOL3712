@@ -1,14 +1,17 @@
 # ******************************************************************************
-###                     Sof, Maddi and Rex' Salinity Workshop               ###
+###                     Sof, Maddi,Vera and Rex' Salinity Workshop               ###
 # ******************************************************************************
 
 # ******************************************************************************
 # Salinity Data Analysis -------------------------------------------------------
 # ******************************************************************************
 
-# First, we're going to clear the data from the global environment so we have a
-# fresh start.
+# First, we're going to clear the data from the global environment so we have a fresh start.
+
+#If you run the below again, it will delete everything though! So if you plan to re-run things from the start, this line needs to be de-activated by putting a # next to it.
 rm(list = ls())
+
+# Work through the code step by step from here. 
 
 
 # Data import and preparation --------------------------------------------------
@@ -16,17 +19,18 @@ rm(list = ls())
 # Let's import our data. If you're working on a Flinders Uni computer,
 # put it on your U: drive or you WILL lose your work.
 
-# The folder we are working in is called the "working directory." It's good
-# practice to keep everything you're working on in this folder. You can check
-# that you're using the correct working directory with:
+# The folder we are working in is called the "working directory." It's good practice to keep everything you're working on in this folder. You can check # that you're using the correct working directory with:
 getwd()
 
 # If the working directory isn't the folder you want to use, set it with:
 # setwd("<enter filepath here>")
-# Your data should be saved in your working directory folder. You can then easily
-# access this data.
+
+#OR click "Session - Set Working Directory - To File location"
+
+# Your data should be saved in your working directory folder. You can then easily access them.
 
 # read.csv() imports the data from the working directory; na.omit() removes rows
+
 # with missing values (helps avoid errors later in tests/plots).
 all_data <- na.omit(read.csv("Salinity_data.csv"))
 

@@ -291,6 +291,8 @@ rootmoist_nooutliers %>%
 rootmoist.tukey <- TukeyHSD(rootmoist.aov, which = "saltconc")
 rootmoist.tukey
 
+par(mfrow=c(1,1))
+
 ### let's graph it! and letters
 plotMeans(rootmoist_nooutliers$rootmoist,
           rootmoist_nooutliers$saltconc,
@@ -353,6 +355,7 @@ totmoist_nooutliers %>%
 # Post-hoc (Tukey)
 totmoist.tukey <- TukeyHSD(totmoist.aov, which = "saltconc")
 totmoist.tukey
+
 
 ### let's graph it! and letters
 plotMeans(totmoist_nooutliers$totmoist,

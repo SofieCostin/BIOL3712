@@ -18,18 +18,21 @@ rm(list = ls())
 # Work through the code step by step from here. 
 
 
-# Data import and preparation --------------------------------------------------
+# Set working directory---------------------------------------------------
 
-# Let's import our data. If you're working on a Flinders Uni computer,
-# put it on your U: drive or you WILL lose your work.
+# Before importing your data, you need to set the directory that the code and data are in - called the "working directory". If you're working on a Flinders Uni computer, remember to put your data on your U: drive or you WILL lose your work.
 
-# The folder we are working in is called the "working directory." It's good practice to keep everything you're working on in this folder. You can check # that you're using the correct working directory with:
+
+# It's good practice to keep everything you're working on in the working directory. You can check that you're using the correct working directory with:
 getwd()
 
 # If the working directory isn't the folder you want to use, set it with:
 # setwd("<enter filepath here>")
 
 #OR click "Session - Set Working Directory - To File location"
+
+
+# Data import and preparation --------------------------------------------------
 
 # Your data should be saved in your working directory folder. You can then easily access them.
 
@@ -98,7 +101,7 @@ levels(alldata_df$saltconc)
 # Shoot height -----------------------------------------------------------------
 
 # We'll use dplyr for tidy summaries.
-# install.packages("dplyr")  # run once if needed
+# install.packages("dplyr")  # run once if needed, afterwards put a # back. It will remain on the computer now that you've installed it.
 library(dplyr)
 
 # First, we're going to analyse the plants' shoot height in response to salinity.
@@ -149,7 +152,7 @@ leveneTest(shootht ~ saltconc, data = alldata_df)
 shootht.aov <- aov(shootht ~ saltconc, data = alldata_df)
 summary(shootht.aov)
 
-# Helpful group summaries (not part of the ANOVA)
+# Helpful group summaries. These are not part of the ANOVA but the table will tell you the mean value of shoot height for each treatment - very useful for explaining in the results. In particular, you can now look at which groups are significantly different in the Tukey test (below) and then explain HOW they are different in terms of percentages. 
 alldata_df %>%
   group_by(saltconc) %>%
   summarise(count = n(),
@@ -175,6 +178,7 @@ plotMeans(alldata_df$shootht,
           ylab = "Shoot height (cm)",
           main = "")
 
+#As explained above, you can use the Tukey output and the means summaries to explain what's going on. So if two groups are significantly different, you can then go to the summmary and get the mean value; and calculate how the mean values differ (e.g. "shoot height at concentration X is 20% of shoot height at concentration Y")
 
 # Once you're happy with the plot, click "Export" and save it in your working
 # folder.
@@ -221,7 +225,7 @@ table(rootln_nooutliers$saltconc)
 # Re‑test normality after removal.
 shapiro.test(rootln_nooutliers$rootln)
 
-#But the histogram suggests that we are now looking at one continuous distribution, which should be fine for ANOVA testing.
+#The histogram suggests that we are now looking at one continuous distribution, which should be fine for ANOVA testing.
 hist(rootln_nooutliers$rootln,
      main = "Histogram: Root length (no outliers)",
      xlab = "Root length (cm)")
@@ -230,7 +234,7 @@ boxplot(rootln ~ saltconc, data = rootln_nooutliers,
         xlab = "Salt concentration (g/L)",
         ylab = "Root length (cm)")
 
-## Still some outliers, but we can move on OR you can removed more outliers if you choose - Remeber you have to provide a justification for why!
+## Still some outliers, but we can move on OR you can remove more outliers if you choose - Remember you have to provide a justification for why, but as long as you do, there's no wrong procedure :-).
 
 # Assumption 2: homogeneity of variances
 leveneTest(rootln ~ saltconc, data = rootln_nooutliers)

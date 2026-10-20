@@ -340,6 +340,8 @@ plotMeans(leafno_nooutliers$leafno, leafno_nooutliers$saltconc,
 # variables (this will put you in the running for an HD!) or open and run the
 # file "workshop1_salinitycont.R" to work through our code.
 
+#It's fine to use copy-paste of the code above and modify it - you don't need to write all your own code!
+
 # IF YOU CHOOSE TO PROCEED YOURSELF, DO NOT CREATE A NEW FILE OR READ NEW DATA.
 # KEEP WORKING FROM THE BOTTOM OF THIS SCRIPT ONWARDS.
 

@@ -282,23 +282,6 @@ kw <- kruskal.test(RESPONSE ~ PREDICTOR, data = data_rm)
 
 kw
 
-# Simple effect size for Kruskal–Wallis (epsilon-squared ε², 0–1 scale)
-# ε² ~ proportion of variability in ranks explained by group
-
-
-H  <- as.numeric(kw$statistic)                # Kruskal–Wallis H
-k  <- nlevels(data_rm$temp)                 # number of groups
-N  <- nrow(data_rm)                         # total N
-epsilon2 <- (H - k + 1) / (N - k)
-epsilon2   # report this alongside the KW test in methods/results
-
-# Interpretation:
-# ε² value:
-# < 0.01	Very small / negligible:	Temperature explains almost none of the variability
-# 0.01 – 0.08	Small effect:	Weak but noticeable difference among temperatures
-# 0.08 – 0.26	Medium effect:	Moderate differences among group medians
-# > 0.26	Large effect:	Strong group differences; temperature explains much of the variation
-# (These cut-offs are based on common guidelines from Tomczak & Tomczak, 2014.)
 
 # compare group medians:
 
